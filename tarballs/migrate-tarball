@@ -1,7 +1,9 @@
 #!/bin/bash
 
 
-tarballs_dir=${1-}
+tarballs_dir=${1%/}
+tarballs_old_dir=${tarballs_dir}.old
+tarballs_new_dir=${tarballs_dir}.new
 
 die () {
     echo "$@" 1>&2
@@ -16,20 +18,42 @@ if [[ ! -d $tarballs_dir ]]; then
     die "$tarballs_dir is not a directory"
 fi
 
-set -o errexit
-set -o verbose
+if [[ -d $tarballs_old_dir ]]; then
+    die "$tarballs_old_dir already exists, delete it first"
+fi
 
-cd $tarballs_dir
+if [[ -d $tarballs_new_dir ]]; then
+    die "$tarballs_new_dir already exists, delete it first"
+fi
 
+(
+    set -o errexit
+    set -x
 
-mkdir 3.1
-for dir in 3.1.*; do
-    mv $dir 3.1/$dir
-done
+    cp -rp $tarballs_dir $tarballs_new_dir
 
-for symlink in *-latest*.tar.gz; do
-    rm -f $symlink
-    ln -s 3.1/$symlink $symlink
-done
+    pushd $tarballs_new_dir > /dev/null
 
+    mkdir 3.1
+    for dir in 3.1.*; do
+        mv $dir 3.1/$dir
+    done
+
+    for symlink in *-latest*.tar.gz; do
+        rm -f $symlink
+        ln -s 3.1/$symlink $symlink
+    done
+
+    popd > /dev/null
+
+    mv $tarballs_dir $tarballs_old_dir
+    mv $tarballs_new_dir $tarballs_dir
+)
+ret=$?
+if [[ $ret -eq 0 ]]; then
+    echo Migration successful.
+    echo After verifying $tarballs_dir, you can remove $tarballs_old_dir
+else
+    echo Migration failed somewhere.
+fi
 
