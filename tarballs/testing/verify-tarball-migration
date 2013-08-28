@@ -1,0 +1,54 @@
+#!/bin/bash
+
+tarballs_dir=${1-}
+
+die () {
+    echo "$@" 1>&2
+    exit 1
+}
+
+. $(dirname $0)/assert.sh || die "Could not load $(dirname $0)/assert.sh"
+
+if [[ -z $tarballs_dir ]]; then
+    die "Tarballs directory not specified or null. This is /usr/local/repo/tarball-install on repo.grid.iu.edu"
+fi
+
+if [[ ! -d $tarballs_dir ]]; then
+    die "$tarballs_dir is not a directory"
+fi
+
+cd $tarballs_dir
+
+dvers=(el5 el6)
+arches=(i386 x86_64)
+versions=(3.1.16 3.1.17 3.1.18 3.1.19 3.1.20 3.1.21 3.1.22)
+metapkgs=(osg-wn-client osg-client)
+
+
+if [[ ! -d 3.1 ]]; then
+    die "3.1 doesn't exist, can't continue"
+fi
+
+for dver in ${dvers[*]}; do
+    for arch in ${arches[*]}; do
+        for metapkg in ${metapkgs[*]}; do
+            assert "[[ -L $metapkg-latest.$dver.$arch.tar.gz ]]"
+            assert "[[ `readlink -f $metapkg-latest.$dver.$arch.tar.gz` == *3.1* ]]"
+
+            pushd 3.1 >/dev/null
+
+            for ver in ${versions[*]}; do
+                assert "[[ -d $ver ]]"
+                if [[ $ver == "3.1.16" ]]; then
+                    assert "[[ -f $ver/$metapkg-$ver-5.$dver.$arch.tar.gz ]]"
+                else
+                    assert "[[ -f $ver/$metapkg-$ver-1.$dver.$arch.tar.gz ]]"
+                fi
+            done
+
+            popd >/dev/null
+        done
+    done
+done
+
+

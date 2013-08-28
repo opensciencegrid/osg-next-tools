@@ -1,0 +1,8 @@
+#!/bin/bash
+
+list=${1?Need list}
+while read name
+    do mkdir -p $(dirname $name)
+    echo $name > $name
+done < $list
+
