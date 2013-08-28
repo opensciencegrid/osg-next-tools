@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tarballs_dir=${1-%/}
+tarballs_dir=${1%/}
 tarballs_dir_bak=${tarballs_dir}.bak
 
 die () {
@@ -21,5 +21,5 @@ if [[ ! -d $tarballs_dir_bak ]]; then
 fi
 
 # Note: rsync is very particular about trailing slashes.
-rsync -avz $tarballs_dir_bak/ $tarballs_dir
+rsync -av --delete-after $tarballs_dir_bak/ $tarballs_dir
 

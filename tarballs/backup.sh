@@ -17,5 +17,5 @@ if [[ ! -d $tarballs_dir ]]; then
 fi
 
 # Note: rsync is very particular about trailing slashes.
-rsync -avz $tarballs_dir/ $tarballs_dir_bak
+rsync -av $tarballs_dir/ $tarballs_dir_bak
 
