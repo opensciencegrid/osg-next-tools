@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tarballs_dir=${1-}
+tarballs_dir=${1-/usr/local/repo/tarball-install}
 
 die () {
     echo "$@" 1>&2
@@ -8,10 +8,6 @@ die () {
 }
 
 . $(dirname $0)/assert.sh || die "Could not load $(dirname $0)/assert.sh"
-
-if [[ -z $tarballs_dir ]]; then
-    die "Tarballs directory not specified or null. This is /usr/local/repo/tarball-install on repo.grid.iu.edu"
-fi
 
 if [[ ! -d $tarballs_dir ]]; then
     die "$tarballs_dir is not a directory"
@@ -38,5 +34,12 @@ for dver in ${dvers[*]}; do
     done
 done
 popd >/dev/null
+
+if [[ ${ASSERT_FAIL:-0} -eq 0 ]]; then
+    echo "No problems."
+else
+    echo "There were some problems, see above."
+    exit 1
+fi
 
 
