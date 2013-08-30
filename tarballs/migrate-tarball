@@ -1,44 +1,45 @@
 #!/bin/bash
 
 
-tarballs_dir=${1%/}
-tarballs_old_dir=${tarballs_dir}.old
-tarballs_new_dir=${tarballs_dir}.new
+tarballs_dir=${1:-/usr/local/repo/tarball-install}
+tarballs_dir=$(dirname "$tarballs_dir")/$(basename "$tarballs_dir")
+tarballs_dir_old=$(dirname "$tarballs_dir")/.$(basename "$tarballs_dir").old
+tarballs_dir_new=$(dirname "$tarballs_dir")/.$(basename "$tarballs_dir").new
+
+mk_sims=$(dirname $0)/mk-sims.sh
 
 die () {
     echo "$@" 1>&2
     exit 1
 }
 
-if [[ -z $tarballs_dir ]]; then
-    die "Tarballs directory not specified or null. This is /usr/local/repo/tarball-install on repo.grid.iu.edu"
-fi
-
 if [[ ! -d $tarballs_dir ]]; then
     die "$tarballs_dir is not a directory"
 fi
 
-if [[ -d $tarballs_old_dir ]]; then
-    die "$tarballs_old_dir already exists, delete it first"
+if [[ -d $tarballs_dir_old ]]; then
+    die "$tarballs_dir_old already exists, delete it first"
 fi
 
-if [[ -d $tarballs_new_dir ]]; then
-    die "$tarballs_new_dir already exists, delete it first"
+if [[ -d $tarballs_dir_new ]]; then
+    die "$tarballs_dir_new already exists, delete it first"
 fi
 
 (
     set -o errexit
-    set -x
 
-    cp -rp $tarballs_dir $tarballs_new_dir
+    echo Creating $tarballs_dir_new
+    cp -rp $tarballs_dir $tarballs_dir_new
 
-    pushd $tarballs_new_dir > /dev/null
+    pushd $tarballs_dir_new > /dev/null
 
+    echo Moving directories
     mkdir 3.1
     for dir in 3.1.*; do
         mv $dir 3.1/$dir
     done
 
+    echo Moving symlinks
     for symlink in *-latest*.tar.gz; do
         rm -f $symlink
         ln -s 3.1/$symlink $symlink
@@ -46,13 +47,18 @@ fi
 
     popd > /dev/null
 
-    mv $tarballs_dir $tarballs_old_dir
-    mv $tarballs_new_dir $tarballs_dir
+    echo Making new symlinks
+    $mk_sims $tarballs_dir_new
+
+    echo Replacing $tarballs_dir with $tarballs_dir_new
+    mv $tarballs_dir $tarballs_dir_old
+    mv $tarballs_dir_new $tarballs_dir
+
 )
 ret=$?
 if [[ $ret -eq 0 ]]; then
     echo Migration successful.
-    echo After verifying $tarballs_dir, you can remove $tarballs_old_dir
+    echo After verifying $tarballs_dir, you can remove $tarballs_dir_old
 else
     echo Migration failed somewhere.
 fi
