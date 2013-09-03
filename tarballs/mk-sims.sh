@@ -1,7 +1,7 @@
 #!/bin/bash
 
 tarballs_dir=${1:-/usr/local/repo/tarball-install}
-SORT_BY_VERSION=$(dirname $0)/sort_by_version.pl
+SORT_BY_VERSION=$(readlink -f $(dirname $0)/sort_by_version.pl)
 
 die () {
     echo "$@" 1>&2
