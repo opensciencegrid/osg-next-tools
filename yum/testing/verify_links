@@ -1,0 +1,49 @@
+#!/bin/bash
+
+assert () {
+    local __msg
+    if [[ $# -ge 2 ]]; then
+        __msg=$1
+        shift
+    else
+        __msg="$@"
+    fi
+    eval "$@"
+    if [[ $? -ne 0 ]]; then
+        ASSERT_FAIL=1
+        echo "Assert fail: $__msg"
+        return $?
+    fi
+}
+
+die () {
+    echo "$@" 1>&2
+    exit 1
+}
+
+if [ ! -d "3.0" ]; then
+    die "Could not find 3.0/. Are you in the right directory?"
+fi
+
+pushd 3.0 > /dev/null
+
+for arch in el5 el6; do
+    for release in contrib development testing release; do
+        assert "[ -L $arch/osg-$release ]"
+        assert "[[ `readlink -f $arch/osg-$release` == */osg/3.1/$arch/$release ]]"
+        if [ $release != "contrib" ]; then
+            assert "[ -L $arch/osg-upcoming-$release ]"
+            assert "[[ `readlink -f $arch/osg-upcoming-$release` == */osg/upcoming/$arch/$release ]]"
+        fi
+    done
+done
+
+popd >/dev/null
+
+if [[ ${ASSERT_FAIL:-0} -eq 0 ]]; then
+    echo "No problems."
+else
+    echo "There were some problems, see above."
+    exit 1
+fi
+

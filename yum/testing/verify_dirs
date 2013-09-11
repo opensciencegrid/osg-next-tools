@@ -1,0 +1,50 @@
+#!/bin/bash
+
+assert () {
+    local __msg
+    if [[ $# -ge 2 ]]; then
+        __msg=$1
+        shift
+    else
+        __msg="$@"
+    fi
+    eval "$@"
+    if [[ $? -ne 0 ]]; then
+        ASSERT_FAIL=1
+        echo "Assert fail: $__msg"
+        return $?
+    fi
+}
+
+die () {
+    echo "$@" 1>&2
+    exit 1
+}
+
+if [ ! -d "osg" ]; then
+    die "Could not find osg/. Did you run mk_yum_dirs? Are you in the right directory?"
+fi
+
+pushd osg > /dev/null
+
+for version in 3.1 3.2 upcoming; do
+    for arch in el5 el6; do
+        for release in contrib development testing release; do
+            if [ $version == "upcoming" ] && [ $release == contrib ]; then
+                continue
+            else
+                assert "[[ -d $version/$arch/$release ]]"
+            fi
+        done
+    done
+done
+
+popd >/dev/null
+
+if [[ ${ASSERT_FAIL:-0} -eq 0 ]]; then
+    echo "No problems."
+else
+    echo "There were some problems, see above."
+    exit 1
+fi
+

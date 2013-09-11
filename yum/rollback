@@ -1,0 +1,23 @@
+#!/bin/env sh
+
+yum_dir="3.0"
+yum_dir_old="3.0.old"
+
+die () {
+    echo "$@" 1>&2
+    exit 1
+}
+
+# Check for expected environment
+if [ ! -d $yum_dir_old ]; then
+    die "$yum_dir_old doesn't exist. Cannot restore backup!"
+fi
+
+# Note: rsync is very particular about trailing slashes.
+rsync -aH --delete-after $yum_dir_old/ $yum_dir
+if [[ $? -eq 0 ]]; then
+    echo "Rollback from $yum_dir_old OK"
+else
+    echo "Rollback from $yum_dir_old failed somewhere"
+fi
+
