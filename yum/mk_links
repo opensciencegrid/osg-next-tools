@@ -1,10 +1,20 @@
 #!/bin/bash
 
-yum_dir="3.0"
-yum_dir_old="3.0.old"
-yum_dir_new="3.0.new"
+yum_dir=${1:-/usr/local/repo/3.0}
+yum_dir=$(dirname "$yum_dir")/$(basename "$yum_dir")
+yum_dir_old=$(dirname "$yum_dir")/.$(basename "$yum_dir").old
+yum_dir_new=$(dirname "$yum_dir")/.$(basename "$yum_dir").new
+
+die () {
+    echo "$@" 1>&2
+    exit 1
+}
 
 # Check for expected environment
+if [ ! -d $yum_dir ]; then
+    die "$yum_dir doesn't exist. Won't be able to back up old yum structure."
+fi
+
 if [ -d $yum_dir_old ]; then
     die "$yum_dir_old already exists, something's broken"
 fi
@@ -16,16 +26,16 @@ fi
 (
     set -o errexit
 
-    pushd $yum_dir > /dev/null
+    pushd `dirname $yum_dir` > /dev/null
     
     echo "Setting up '$yum_dir_new'..."
     for arch in el5 el6; do
         symlink_dir="$yum_dir_new/$arch"
         mkdir -p $symlink_dir
         for release in contrib development testing release; do
-            ln -s "../../osg/3.1/$arch/$release" "$arch/osg-$release"
+            ln -s "../../osg/3.1/$arch/$release" "$yum_dir_new/$arch/osg-$release"
             if [ $release != "contrib" ]; then
-                ln -s "../../osg/upcoming/$arch/$release" "osg-upcoming-$release"                
+                ln -s "../../osg/upcoming/$arch/$release" "$yum_dir_new/$arch/osg-upcoming-$release"
             fi
         done
     done

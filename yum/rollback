@@ -1,7 +1,8 @@
 #!/bin/env sh
 
-yum_dir="3.0"
-yum_dir_old="3.0.old"
+yum_dir=${1:-/usr/local/repo/3.0}
+yum_dir=$(dirname "$yum_dir")/$(basename "$yum_dir")
+yum_dir_old=$(dirname "$yum_dir")/.$(basename "$yum_dir").old
 
 die () {
     echo "$@" 1>&2
