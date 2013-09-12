@@ -27,13 +27,13 @@ fi
 
 pushd 3.0 > /dev/null
 
-for arch in el5 el6; do
+for dver in el5 el6; do
     for release in contrib development testing release; do
-        assert "[ -L $arch/osg-$release ]"
-        assert "[[ `readlink -f $arch/osg-$release` == */osg/3.1/$arch/$release ]]"
+        assert "[ -L $dver/osg-$release ]"
+        assert "[[ `readlink -f $dver/osg-$release` == */osg/3.1/$dver/$release ]]"
         if [ $release != "contrib" ]; then
-            assert "[ -L $arch/osg-upcoming-$release ]"
-            assert "[[ `readlink -f $arch/osg-upcoming-$release` == */osg/upcoming/$arch/$release ]]"
+            assert "[ -L $dver/osg-upcoming-$release ]"
+            assert "[[ `readlink -f $dver/osg-upcoming-$release` == */osg/upcoming/$dver/$release ]]"
         fi
     done
 done

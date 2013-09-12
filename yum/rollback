@@ -1,4 +1,4 @@
-#!/bin/env sh
+#!/bin/bash
 
 yum_dir=${1:-/usr/local/repo/3.0}
 yum_dir=$(dirname "$yum_dir")/$(basename "$yum_dir")

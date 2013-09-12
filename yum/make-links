@@ -12,15 +12,15 @@ die () {
 
 # Check for expected environment
 if [ ! -d $yum_dir ]; then
-    die "$yum_dir doesn't exist. Won't be able to back up old yum structure."
+    die "$yum_dir doesn't exist: Won't be able to back up old yum structure."
 fi
 
 if [ -d $yum_dir_old ]; then
-    die "$yum_dir_old already exists, something's broken"
+    die "$yum_dir_old already exists: Won't be able to back up old yum structure."
 fi
 
 if [ -d $yum_dir_new ]; then
-    die "$yum_dir_new already exists, something's broken"
+    die "$yum_dir_new already exists: Won't be able to create symlinks"
 fi
 
 (
@@ -29,13 +29,12 @@ fi
     pushd `dirname $yum_dir` > /dev/null
     
     echo "Setting up '$yum_dir_new'..."
-    for arch in el5 el6; do
-        symlink_dir="$yum_dir_new/$arch"
-        mkdir -p $symlink_dir
+    for dver in el5 el6; do
+        mkdir -p "$yum_dir_new/$dver"
         for release in contrib development testing release; do
-            ln -s "../../osg/3.1/$arch/$release" "$yum_dir_new/$arch/osg-$release"
+            ln -s "../../osg/3.1/$dver/$release" "$yum_dir_new/$dver/osg-$release"
             if [ $release != "contrib" ]; then
-                ln -s "../../osg/upcoming/$arch/$release" "$yum_dir_new/$arch/osg-upcoming-$release"
+                ln -s "../../osg/upcoming/$dver/$release" "$yum_dir_new/$dver/osg-upcoming-$release"
             fi
         done
     done
