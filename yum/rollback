@@ -2,6 +2,7 @@
 
 yum_dir=${1:-/usr/local/repo/3.0}
 yum_dir=$(dirname "$yum_dir")/$(basename "$yum_dir")
+yum_dir_new=$(dirname "$yum_dir")/.$(basename "$yum_dir").new
 yum_dir_old=$(dirname "$yum_dir")/.$(basename "$yum_dir").old
 
 die () {
@@ -9,10 +10,26 @@ die () {
     exit 1
 }
 
+pushd `dirname $yum_dir` > /dev/null
+
 # Check for expected environment
 if [ ! -d $yum_dir_old ]; then
+    if [ -d $yum_dir_new ]; then
+        echo "Removing $yum_dir_new."
+        rm -rf $yum_dir_new
+    fi
     die "$yum_dir_old doesn't exist. Cannot restore backup!"
 fi
+
+for dver in el5 el6; do
+    latest_symlink="osg-$dver-release-latest.rpm"
+    latest_symlink_old=".$latest_symlink.old"
+    if [ ! -f $latest_symlink_old ]; then
+        die "$latest_symlink_old doesn't exist. Cannot restore backup!"
+    fi
+    rsync -aH "$latest_symlink_old" "$latest_symlink"
+    echo "Rollback from $latest_symlink_old OK"
+done
 
 # Note: rsync is very particular about trailing slashes.
 rsync -aH --delete-after $yum_dir_old/ $yum_dir
@@ -22,3 +39,4 @@ else
     echo "Rollback from $yum_dir_old failed somewhere"
 fi
 
+popd > /dev/null

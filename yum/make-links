@@ -23,14 +23,23 @@ if [ -d $yum_dir_new ]; then
     die "$yum_dir_new already exists: Won't be able to create symlinks"
 fi
 
+for dver in el5 el6; do
+    backup_symlink=".osg-$dver-release-latest.rpm.old"    
+    if [ -f "$backup_symlink" ]; then
+        die "$backup_symlink already exists: Won't be able to backup symlinks"
+    fi
+done
+
 (
     set -o errexit
 
     pushd `dirname $yum_dir` > /dev/null
-    
+
     echo "Setting up '$yum_dir_new'..."
     for dver in el5 el6; do
         mkdir -p "$yum_dir_new/$dver"
+        echo "Create osg-$dver-release convenience symlink..."
+        ln -s "osg/3.1/osg-3.1-$dver-release-latest.rpm" ".osg-$dver-release-latest.rpm.new" 
         for release in contrib development testing release; do
             ln -s "../../osg/3.1/$dver/$release" "$yum_dir_new/$dver/osg-$release"
             if [ $release != "contrib" ]; then
@@ -44,11 +53,19 @@ fi
     echo "Moving dirs into their proper locations..."
     mv $yum_dir $yum_dir_old
     mv $yum_dir_new $yum_dir
+
+    echo "Moving convenience symlinks into their proper locations..."
+    for dver in el5 el6; do
+        latest_symlink="osg-$dver-release-latest.rpm"
+        mv $latest_symlink ".$latest_symlink.old"
+        mv ".$latest_symlink.new" $latest_symlink
+    done
 )
 ret=$?
 if [ $ret -eq 0 ]; then
     echo "Migration successful."
     echo "Verify contents of '$yum_dir', then go ahead and remove '$yum_dir_old'."
+    echo "Verify contents of convenience links', then go ahead and remove the old ones."
 else
     echo "Migration failed somewhere."
     echo "ROLLBACK! ROLLBACK!"
