@@ -28,6 +28,8 @@ fi
 pushd 3.0 > /dev/null
 
 for dver in el5 el6; do
+    assert "[ -L ../osg-$dver-release-latest.rpm ]"
+    assert "[[ `readlink -f ../osg-$dver-release-latest.rpm` == */osg/3.1/osg-3.1-$dver-release-latest.rpm ]]"
     for release in contrib development testing release; do
         assert "[ -L $dver/osg-$release ]"
         assert "[[ `readlink -f $dver/osg-$release` == */osg/3.1/$dver/$release ]]"
