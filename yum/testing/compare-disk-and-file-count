@@ -1,0 +1,66 @@
+#!/bin/bash
+
+die () {
+    echo "$@" 1>&2
+    exit 1
+}
+
+if [ ! -d "osg" ]; then
+    die "Could not find osg/. Did you run the mash script? Are you in the right directory (/usr/local/repo)?"
+fi
+
+if [ ! -d "3.0" ]; then
+    die "Could not find 3.0/. Did you run the mash script? Are you in the right directory (/usr/local/repo)?"
+fi
+
+(
+    pass=0
+    fail=0
+    
+    for version in 3.1 upcoming; do
+        for dver in el5 el6; do
+            for release in contrib development testing release; do
+                for arch in i386 x86_64 "source/SRPMS"; do
+                    new_dir="osg/$version/$dver/$release/$arch"
+                    if [ $version == "upcoming" ]; then
+                        if [ $release != "contrib" ]; then
+                            old_dir=3.0/$dver/osg-upcoming-$release/$arch
+                        else
+                            continue
+                        fi
+                    else
+                        old_dir="3.0/$dver/osg-$release/$arch"
+                    fi
+
+                    old_file_count=`find $old_dir | wc -l`
+                    new_file_count=`find $new_dir | wc -l`
+
+                    old_size=`du -s $old_dir | awk '{print $1}'`
+                    new_size=`du -s $new_dir | awk '{print $1}'`
+
+                    if [ $old_file_count -eq $new_file_count ] && [ $old_size -eq $new_size ]; then
+                        echo -ne '\E[32m' # Print green text
+                        pass=$(($pass+1))
+                    else
+                        echo -ne '\E[31m' # Print red text
+                        fail=$(($fail+1))
+                    fi
+                    echo -e "===$version $dver $release $arch comparison"
+                    echo -e "\t\t old\t new"
+                    echo -e "file count\t $old_file_count\t $new_file_count"
+                    echo -e "disk usage\t $old_size\t $new_size"
+                done
+            done
+        done
+    done
+
+    # Return color to normal
+    echo -ne '\E[0m'
+
+    echo "Good comparisons: $pass"
+    echo "Bad comparisons: $fail"
+)
+ret=$?
+if [ $ret -ne 0 ]; then
+    echo "Error in verification, see above."
+fi
