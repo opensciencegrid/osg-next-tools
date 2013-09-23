@@ -22,7 +22,7 @@ die () {
 }
 
 if [ ! -d "osg" ]; then
-    die "Could not find osg/. Did you run mk_yum_dirs? Are you in the right directory?"
+    die "Could not find osg/. Did you run the mash script? Are you in the right directory (/usr/local/repo)?"
 fi
 
 pushd osg > /dev/null
@@ -30,10 +30,12 @@ pushd osg > /dev/null
 for version in 3.1 3.2 upcoming; do
     for dver in el5 el6; do
         for release in contrib development testing release; do
-            if [ $version == "upcoming" ] && [ $release == contrib ]; then
-                continue
-            else
-                assert "[[ -d $version/$dver/$release ]]"
+            for arch in i386 x86_64 "source/SRPMS"; do
+                if [ $version == "upcoming" ] && [ $release == contrib ]; then
+                    continue
+                else
+                    assert "[[ -d $version/$dver/$release/$arch ]]"
+                fi
             fi
         done
     done
