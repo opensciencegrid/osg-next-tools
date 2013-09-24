@@ -1,0 +1,49 @@
+#!/usr/bin/python
+
+# Compares two directories and outputs a diff of the file lists between them.
+# If a file exists in both directories and has a different size, the file will
+# be marked with an 'M' flag.
+
+import sys
+import os
+import subprocess
+import re
+
+# You're not using this script right:
+if len(sys.argv) != 3:
+    print("Usage: whats-the-diff <old dir> <new dir>")
+    print("Reading Output:")
+    print("    + file only exists in new dir")
+    print("    - file only exists in old dir")
+    print("    M file size differs between dirs")
+    sys.exit(1)
+
+old_dir = sys.argv[1]
+new_dir = sys.argv[2]
+
+# run rsync for comparison, should probably do some exception handling here
+command = ["rsync", "-vnr", "--size-only", "--delete", old_dir, new_dir]
+p = subprocess.Popen(command, stdout=subprocess.PIPE)
+stdout = p.stdout
+
+# Print the output in a diff-like format
+print("+++ %s\n--- %s" % (new_dir, old_dir))
+for line in stdout:
+    line = line.strip()
+    if re.match("deleting.*", line):
+        # files in new dir that don't exist in old dir
+        print re.sub("deleting ", "+ ", line)
+    elif (re.match("sending incremental file list", line) or
+          re.match("sent \d+ bytes.*", line) or
+          re.match("total size is \d+", line) or
+          re.match("^$", line)):
+        # get rid of boring lines we don't need
+        continue
+    else:
+        if os.path.isfile("%s/%s/%s" % (os.getcwd(), new_dir, line)):
+            # if we get this far, the file is in the old dir and new dir and
+            # has a different file size
+            print("M %s" % line)
+        else:
+            # files in old dir that don't exist in new dir
+            print("- %s" % line)
