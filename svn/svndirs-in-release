@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# A script to report on what packages are in our koji tags and where (in SVN)
+# they were built from. Displays one table for each tag with the build name in
+# the first column and the SVN branch and revision in the second column.
+# Prints <non-SVN> in the second column if the build was not from SVN.
+
+usage () {
+    echo "Usage: $0 TAG..."
+    exit 2
+}
+
+latest_builds_in_tag () {
+    local tag=$1
+
+    osg-koji -q list-tagged $tag --latest | awk '{print $1}'
+}
+
+svndir_of_build () {
+    local build=$1
+    local svndir ret
+
+    # We're looking for lines like:
+    # Task: 61945 build (el5-osg, /svn/native/redhat/trunk/xrootd:16696)
+    # and want to extract this:                      ^^^^^^^^^^^^^^^^^^
+    # or print <non-SVN> when we can't.
+    svndir=$(osg-koji buildinfo $build | \
+                grep \^Task: | \
+                egrep -o '/svn/native/redhat/[^:]+:[[:digit:]]+')
+    ret=$?
+    if [[ $ret -ne 0 ]]; then
+        echo '<non-SVN>'
+    else
+        echo $svndir | sed 's%/svn/native/redhat/%%'
+    fi
+}
+
+print_report_for_tag () {
+    local tag=$1
+    local builds=$(mktemp) svndirs=$(mktemp)
+
+    echo ----- $tag -----
+    latest_builds_in_tag $tag >> $builds
+    while read build; do
+        printf "%-50s %s\n" $build $(svndir_of_build $build) >> $svndirs
+    done < $builds
+    fgrep -v '<non-SVN>' $svndirs
+    fgrep '<non-SVN>' $svndirs
+    echo
+    echo
+
+    rm -f $builds $svndirs
+}
+
+if [[ $# -lt 1 ]]; then
+    usage
+else
+    for tag in "$@"; do
+        print_report_for_tag $tag
+    done
+fi
+
