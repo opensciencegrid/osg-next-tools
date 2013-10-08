@@ -35,8 +35,8 @@ fi
                     old_file_count=`find $old_dir -maxdepth 1 -type f | wc -l`
                     new_file_count=`find $new_dir -maxdepth 1 -type f | wc -l`
 
-                    old_size=`du -s $old_dir | awk '{print $1}'`
-                    new_size=`du -s $new_dir | awk '{print $1}'`
+                    old_size=`du -s --max-depth=1 $old_dir | awk '{print $1}'`
+                    new_size=`du -s --max-depth=1 $new_dir | awk '{print $1}'`
 
                     if [ $old_file_count -eq $new_file_count ] && [ $old_size -eq $new_size ]; then
                         echo -ne '\E[32m' # Print green text
