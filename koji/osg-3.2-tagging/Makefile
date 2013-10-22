@@ -16,7 +16,10 @@ builds:
 trunk-dirs:
 	./get-trunk-dirs > trunk-dirs
 
-apply-tags:
+3.2-tags:
+	./create-tags
+
+apply-tags: newtags 3.2-tags
 	./tag-builds
 
 clean:
@@ -25,5 +28,5 @@ clean:
 clean-all: clean
 	rm -rf builds
 
-.PHONY: all clean clean-all apply-tags
+.PHONY: all clean clean-all apply-tags 3.2-tags
 

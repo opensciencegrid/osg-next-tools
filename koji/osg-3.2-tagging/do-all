@@ -8,6 +8,7 @@ cd "$(dirname "$0")"
 ./mk-newtags
 ./whatsmissing > missing.list
 
-# only run this when ready to apply tags to koji
+# only run these when ready to make changes to koji
+#./create-tags
 #./tag-builds
 

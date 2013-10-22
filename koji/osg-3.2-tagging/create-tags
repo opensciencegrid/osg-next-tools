@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# actual command lines expanded to run by hand...
+
+
+### new tags ###
+
+#for tag in osg-3.2-el{5,6}-{contrib,development,prerelease,release,testing}; do
+#  osg-koji add-tag --arches="i386 x86_64" $tag
+#done
+
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-contrib
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-development
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-prerelease
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-release
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-testing
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-contrib
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-development
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-prerelease
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-release
+osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-testing
+
+
+### tag inheritance ###
+
+# select 'osg-koji add-tag-inheritance --priority=' || priority
+#        || case when noconfig then ' --noconfig ' else ' ' end
+#        || replace(b.name,'osg-3.1','osg-3.2') || ' '
+#        || replace(c.name,'osg-3.1','osg-3.2') as cmdline
+#   from tag_inheritance a
+#   left join tag b
+#     on a.tag_id = b.id
+#   left join tag c
+#     on a.parent_id = c.id
+#  where active
+#    and b.name like 'osg-3.1%'
+#  order by b.name,priority;
+
+osg-koji add-tag-inheritance --priority=1  osg-3.2-el5-build         osg-3.2-el5-development
+osg-koji add-tag-inheritance --priority=2  osg-3.2-el5-build         dist-el5-build         
+osg-koji add-tag-inheritance --priority=0  osg-3.2-el5-contrib       dist-el5               
+osg-koji add-tag-inheritance --priority=4  osg-3.2-el5-development   osg-3.2-el5-testing    
+osg-koji add-tag-inheritance --priority=2  osg-3.2-el5-release       osg-el5                
+osg-koji add-tag-inheritance --priority=9  osg-3.2-el5-release-build osg-3.2-el5-release    
+osg-koji add-tag-inheritance --priority=10 osg-3.2-el5-release-build dist-el5-build         
+osg-koji add-tag-inheritance --priority=1  osg-3.2-el5-testing       osg-3.2-el5-release    
+osg-koji add-tag-inheritance --priority=0  osg-3.2-el6-build         osg-3.2-el6-development
+osg-koji add-tag-inheritance --priority=10 osg-3.2-el6-build         dist-el6-build         
+osg-koji add-tag-inheritance --priority=1  osg-3.2-el6-contrib       dist-el6               
+osg-koji add-tag-inheritance --priority=1  osg-3.2-el6-development   osg-3.2-el6-testing    
+osg-koji add-tag-inheritance --priority=0  osg-3.2-el6-release       osg-el6                
+osg-koji add-tag-inheritance --priority=9  osg-3.2-el6-release-build osg-3.2-el6-release    
+osg-koji add-tag-inheritance --priority=10 osg-3.2-el6-release-build dist-el6-build         
+osg-koji add-tag-inheritance --priority=0  osg-3.2-el6-testing       osg-3.2-el6-release    
+osg-koji add-tag-inheritance --priority=1  --noconfig osg-3.2-el5-prerelease  osg-el5
+osg-koji add-tag-inheritance --priority=1  --noconfig osg-3.2-el6-prerelease  osg-el6
+
+
+### build targets ###
+
+osg-koji add-target osg-3.2-el5 osg-3.2-el5-build osg-3.2-el5-development
+osg-koji add-target osg-3.2-el6 osg-3.2-el6-build osg-3.2-el6-development
+
+
