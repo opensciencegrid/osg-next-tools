@@ -1,0 +1,5 @@
+#!/bin/bash
+
+svn ls file:///p/condor/workspaces/vdt/svn/native/redhat/trunk \
+| grep /$ | tr -d /
+

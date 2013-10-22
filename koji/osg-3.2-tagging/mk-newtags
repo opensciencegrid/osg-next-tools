@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+cd "$(dirname "$0")"
+
+shopt -s nullglob  # no upcoming-contrib
+
+for dver in el{5,6}; do
+  for repo in contrib development testing release; do
+    case $repo in
+      release ) pre=pre ;;
+            * ) pre= ;;
+    esac
+#   cat builds/$dver-osg-{,[u]pcoming-}$repo \
+#        ./maxv > newtags/osg-3.2-$dver-$repo
+    ./maxv builds/$dver-osg-{,[u]pcoming-}$repo \
+         > newtags/osg-3.2-$dver-$pre$repo      \
+        2> dupes/osg-3.2-$dver-$pre$repo
+  done
+done
+

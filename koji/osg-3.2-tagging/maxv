@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+import rpm
+from rpmUtils.miscutils import stringToVersion
+import sys
+
+def rpmvercmp(a,b):
+    return rpm.labelCompare(*[stringToVersion(x) for x in (a,b)])
+
+def _maxrpmver(a,b):
+    return a if rpmvercmp(a,b) > 0 else b
+
+def maxrpmver(*seq):
+    if len(seq) == 1 and hasattr(seq[0],"__iter__"):
+        seq = seq[0]
+    return reduce(_maxrpmver, seq, None)
+
+def n_vr(line):
+    n,v,r = line.rstrip("\n").rsplit("-",2)
+    return n, v+'-'+r
+
+nvrmap = {}
+trunk_dirs = set()
+
+def slurp(f,fn=None):
+    for line in f:
+        n,vr = n_vr(line)
+        if n in trunk_dirs:
+            #nvrmap.setdefault(n,set()).add(vr)
+            nvrmap.setdefault(n,{})[vr] = fn
+  
+def slurpfn(fn):
+    with open(fn) as f:
+        slurp(f,fn)
+
+#def get_trunk_dirs():
+with open('trunk-dirs') as td:
+    for line in td:
+        trunk_dirs.add(line.rstrip("\n"))
+
+if len(sys.argv) > 1:
+    for fn in sys.argv[1:]:
+      slurpfn(fn)
+else:
+    slurp(sys.stdin)
+
+def eprintf(fmt,*args):
+    sys.stderr.write(fmt % args)
+
+for n,vrs in sorted(nvrmap.items()):
+    if len(vrs) > 1:
+        eprintf("MULTIPLE: %s\n", n)
+        for vr in sorted(vrs,rpmvercmp):
+            eprintf("          -> ")
+            if vrs[vr] is not None:
+                eprintf("%s (%s)\n", vr, vrs[vr].split("/")[-1])
+            else:
+                eprintf("%s\n", vr)
+
+for n,vrs in sorted(nvrmap.items()):
+    maxvr = maxrpmver(vrs)
+    print "%s-%s" % (n,maxvr)
+

@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+cd "$(dirname "$0")"
+
+for tag in osg-3.2-el{5,6}-development; do
+  perl -pe 's{(-[^-\n]+){2}$}{}' newtags/$tag \
+  | fgrep -vxf- trunk-dirs \
+  | sed 's/^/  /' \
+  | awk 'NR==1{print "Missing from",tag ":"}
+              {print}
+         END  {if (NR) print ""}' tag=$tag
+done
+
+perl -pe 's{(-[^-\n]+){2}$}{}' newtags/osg-3.2-el{5,6}-development \
+| fgrep -vxf- trunk-dirs \
+| sed 's/^/  /' \
+| awk 'NR==1{print "Missing from both:"};{print}'
+

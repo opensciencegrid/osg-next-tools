@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+cd "$(dirname "$0")"
+
+./pull-from-koji
+./get-trunk-dirs > trunk-dirs
+./mk-newtags
+./whatsmissing > missing.list
+
+# only run this when ready to apply tags to koji
+#./tag-builds
+
