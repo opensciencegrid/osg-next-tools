@@ -33,7 +33,7 @@ def slurpfn(fn):
         slurp(f,fn)
 
 #def get_trunk_dirs():
-with open('trunk-dirs') as td:
+with open('package-list') as td:
     for line in td:
         trunk_dirs.add(line.rstrip("\n"))
 

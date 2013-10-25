@@ -1,10 +1,11 @@
 
-default: missing.list
+default: missing.txt
 
-missing.list: newtags trunk-dirs
-	./whatsmissing > missing.list
+missing.txt: newtags package-list
+	./whatsmissing > missing.txt
 
-newtags: trunk-dirs builds
+newtags: package-list builds
+	rm -rf newtags dupes
 	mkdir newtags dupes
 	./mk-newtags
 
@@ -13,8 +14,8 @@ builds:
 	./pull-from-koji
 
 
-trunk-dirs:
-	./get-trunk-dirs > trunk-dirs
+package-list:
+	./get-trunk-dirs > package-list
 
 3.2-tags:
 	./create-tags
@@ -23,7 +24,7 @@ apply-tags: newtags 3.2-tags
 	./tag-builds
 
 clean:
-	rm -rf newtags dupes trunk-dirs missing.list
+	rm -rf newtags dupes package-list missing.txt
 
 clean-all: clean
 	rm -rf builds

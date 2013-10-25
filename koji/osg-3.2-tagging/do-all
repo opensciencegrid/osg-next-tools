@@ -4,9 +4,9 @@ set -e
 cd "$(dirname "$0")"
 
 ./pull-from-koji
-./get-trunk-dirs > trunk-dirs
+./get-trunk-dirs > package-list
 ./mk-newtags
-./whatsmissing > missing.list
+./whatsmissing > missing.txt
 
 # only run these when ready to make changes to koji
 #./create-tags
