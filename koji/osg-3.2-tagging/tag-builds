@@ -1,9 +1,20 @@
 #!/bin/bash
 set -e
 
+usage () {
+  echo "$(basename "$0") [-n]"
+  echo "use -n for dry-run"
+  exit
+}
+
+case $1 in
+  -n ) DRYRUN='-n1 echo' ;;
+  -* ) usage ;;
+esac
+
 cd "$(dirname "$0")"/newtags
 
 for tag in *; do
-  xargs -a $tag osg-koji tag-pkg $tag
+  xargs -ra $tag $DRYRUN osg-koji tag-pkg $tag
 done
 

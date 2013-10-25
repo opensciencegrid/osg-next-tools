@@ -3,7 +3,8 @@ set -e
 
 cd "$(dirname "$0")"
 
-for x in el{5,6}-osg-{contrib,{,upcoming-}{development,testing,release}}; do
+for x in osg-3.1-el{5,6}-contrib \
+         osg-{3.1,upcoming}-el{5,6}-{development,testing,release}; do
   osg-koji list-tagged --latest $x | awk 'NR>2{print $1}' > builds/$x
 done
 

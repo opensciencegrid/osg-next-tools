@@ -11,9 +11,9 @@ for dver in el{5,6}; do
       release ) pre=pre ;;
             * ) pre= ;;
     esac
-#   cat builds/$dver-osg-{,[u]pcoming-}$repo \
+#   cat builds/osg-{3.1,[u]pcoming}-$dver-$repo \
 #        ./maxv > newtags/osg-3.2-$dver-$repo
-    ./maxv builds/$dver-osg-{,[u]pcoming-}$repo \
+    ./maxv builds/osg-{3.1,[u]pcoming}-$dver-$repo \
          > newtags/osg-3.2-$dver-$pre$repo      \
         2> dupes/osg-3.2-$dver-$pre$repo
   done
