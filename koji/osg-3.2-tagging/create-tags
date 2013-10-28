@@ -9,16 +9,16 @@
 #  osg-koji add-tag --arches="i386 x86_64" $tag
 #done
 
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-contrib
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-development
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-prerelease
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-release
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el5-testing
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-contrib
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-development
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-prerelease
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-release
-osg-koji add-tag --arches=i386 x86_64 osg-3.2-el6-testing
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el5-contrib
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el5-development
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el5-prerelease
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el5-release
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el5-testing
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el6-contrib
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el6-development
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el6-prerelease
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el6-release
+osg-koji add-tag --arches="i386 x86_64" osg-3.2-el6-testing
 
 
 ### tag inheritance ###
