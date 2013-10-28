@@ -19,12 +19,12 @@ def n_vr(line):
     return n, v+'-'+r
 
 nvrmap = {}
-trunk_dirs = set()
+packages = set()
 
 def slurp(f,fn=None):
     for line in f:
         n,vr = n_vr(line)
-        if n in trunk_dirs:
+        if n in packages:
             #nvrmap.setdefault(n,set()).add(vr)
             nvrmap.setdefault(n,{})[vr] = fn
   
@@ -32,10 +32,10 @@ def slurpfn(fn):
     with open(fn) as f:
         slurp(f,fn)
 
-#def get_trunk_dirs():
-with open('package-list') as td:
-    for line in td:
-        trunk_dirs.add(line.rstrip("\n"))
+#def get_packages():
+with open('package-list') as plf:
+    for line in plf:
+        packages.add(line.rstrip("\n"))
 
 if len(sys.argv) > 1:
     for fn in sys.argv[1:]:
