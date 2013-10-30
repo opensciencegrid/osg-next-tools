@@ -65,4 +65,7 @@ osg-koji add-tag-inheritance --priority=1  --noconfig osg-3.2-el6-prerelease  os
 osg-koji add-target osg-3.2-el5 osg-3.2-el5-build osg-3.2-el5-development
 osg-koji add-target osg-3.2-el6 osg-3.2-el6-build osg-3.2-el6-development
 
+for tag in osg-3.2-el{5,6}-{release-build,development}; do
+  osg-koji add-target kojira-fake-$tag $tag kojira-fake
+done
 
