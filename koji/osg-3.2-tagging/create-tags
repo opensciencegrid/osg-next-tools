@@ -60,12 +60,27 @@ osg-koji add-tag-inheritance --priority=1  --noconfig osg-3.2-el5-prerelease  os
 osg-koji add-tag-inheritance --priority=1  --noconfig osg-3.2-el6-prerelease  osg-el6
 
 
+# fix the upcoming build inheritance
+osg-koji add-tag-inheritance --priority=3 osg-upcoming-el5-build osg-3.2-el5-build
+osg-koji add-tag-inheritance --priority=3 osg-upcoming-el6-build osg-3.2-el6-build
+
+osg-koji remove-tag-inheritance osg-upcoming-el5-build osg-3.1-el5-build
+osg-koji remove-tag-inheritance osg-upcoming-el6-build osg-3.1-el6-build
+
+
 ### build targets ###
 
 osg-koji add-target osg-3.2-el5 osg-3.2-el5-build osg-3.2-el5-development
 osg-koji add-target osg-3.2-el6 osg-3.2-el6-build osg-3.2-el6-development
 
-for tag in osg-3.2-el{5,6}-{release-build,development}; do
-  osg-koji add-target kojira-fake-$tag $tag kojira-fake
-done
+# kojira-fake
+
+#for tag in osg-3.2-el{5,6}-{release-build,development}; do
+#  osg-koji add-target kojira-fake-$tag $tag kojira-fake
+#done
+
+osg-koji add-target kojira-fake-osg-3.2-el5-release-build osg-3.2-el5-release-build kojira-fake
+osg-koji add-target kojira-fake-osg-3.2-el5-development   osg-3.2-el5-development   kojira-fake
+osg-koji add-target kojira-fake-osg-3.2-el6-release-build osg-3.2-el6-release-build kojira-fake
+osg-koji add-target kojira-fake-osg-3.2-el6-development   osg-3.2-el6-development   kojira-fake
 
