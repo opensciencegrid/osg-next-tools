@@ -15,6 +15,6 @@ esac
 cd "$(dirname "$0")"/newtags
 
 for tag in *; do
-  xargs -ra $tag $DRYRUN osg-koji tag-pkg $tag
+  xargs -ra $tag $DRYRUN osg-koji tag-pkg --nowait $tag
 done
 
