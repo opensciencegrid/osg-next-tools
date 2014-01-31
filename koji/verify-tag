@@ -1,0 +1,27 @@
+#!/bin/bash
+
+KOJI=osg-koji
+
+tag=${1?Need tag}
+file=${2:-$tag}
+
+nvrs_for_tag () {
+    local tag=$1
+    $KOJI -q list-tagged $tag | awk '{print $1}'
+}
+
+subtract_sets () {
+    local minuend_file=$1 subtrahend_file=$2
+    fgrep -vxf $subtrahend_file $minuend_file
+}
+
+intersect_sets () {
+    local file_a=$1 file_b=$2
+    fgrep -xf $file_a $file_b
+}
+
+echo '*** In koji but not in file ***'
+subtract_sets <(nvrs_for_tag $tag) $file
+echo '*** In file but not in koji ***'
+subtract_sets $file <(nvrs_for_tag $tag)
+

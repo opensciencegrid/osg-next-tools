@@ -1,0 +1,11 @@
+#!/bin/bash
+
+tag=${1?Need tag}
+
+osg-koji -q list-tagged $tag           | # get all tagged packages
+    awk '{print $1}'                   | # keep just the NVR
+    sed -r -e 's/-[^-]+-[^-]+$//'      | # keep just the name
+    uniq -c                            | # get counts of each
+    egrep -v '[[:space:]]1[[:space:]]' | # keep names with more than one entry
+    awk '{print $2}'                     # get rid of the counts
+    

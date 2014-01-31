@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# Note: this uses koji's idea of what 'latest' is -- which means 'most recently tagged', not 'newest version'
+
+KOJI=osg-koji
+
+dry_run=--test
+
+usage () {
+    echo "Usage:"
+    echo "$(basename 0) [-commit] <tag>"
+    echo "    -commit -- Actually do untagging (otherwise just shows what would get untagged)"
+}
+
+if [[ $1 = -* ]]; then
+    if [[ $1 = -c* ]]; then
+        dry_run=
+        shift
+    elif [[ $1 = -h* ]]; then
+        usage
+        exit 0
+    else
+        echo "Invalid option $1"
+        usage
+        exit 2
+    fi
+fi
+
+tag=$1
+if [[ -z $tag ]]; then
+    echo "tag not specified"
+    usage
+    exit 2
+fi
+
+nvrs_for_tag () {
+    local tag=$1
+    $KOJI -q list-tagged $tag | awk '{print $1}'
+}
+
+nvr_to_name () {
+    sed -r -e 's/-[^-]+-[^-]+$//'
+}
+
+names_for_tag () {
+    local tag=$1
+    nvrs_for_tag $tag | nvr_to_name | uniq
+}
+
+names_for_tag $tag | xargs $KOJI untag-pkg $dry_run --non-latest $tag
+
+# unused but potentially useful
+#latest_nvrs_for_tag () {
+#    local tag=$1
+#    $KOJI -q list-tagged --latest $tag | awk '{print $1}'
+#}
+#
+#non_latest_nvrs_for_tag () {
+#    local tag=$1
+#    diff <(nvrs_for_tag $tag) <(latest_nvrs_for_tag $tag) |
+#        grep '^< '                                        | # keep removals
+#        cut -c 3-                                           # get rid of the markers
+#}
+#
