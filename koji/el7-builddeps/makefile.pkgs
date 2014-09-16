@@ -1,0 +1,54 @@
+PKGS = autopyfactory bestman2 bigtop-jsvc bigtop-utils blahp buildsys-build \
+ buildsys-macros bwctl cctools CGSI-gSOAP cilogon-ca-certs \
+ cilogon-ca-certs-compat cmake cms-xrootd cog-jglobus-axis condor \
+ condor-cron cvmfs cvmfs-keys dcache-gratia-probe dcache-srmclient dcap \
+ edg-gridftp-client edg-mkgridmap emi-trustmanager emi-trustmanager-axis \
+ emi-trustmanager-tomcat frontier-squid gfal gip glexec \
+ glexec-wrapper-scripts glideinwms glite-build-common-cpp \
+ glite-ce-cream-client-api-c glite-ce-cream-utils glite-ce-wsdl \
+ glite-data-build glite-data-delegation-api-c glite-data-delegation-cli \
+ glite-data-transfer-interface glite-data-util-c glite-fts-client \
+ glite-jobid-api-c glite-jobid-api-cpp glite-lbjp-common-gsoap-plugin \
+ glite-lbjp-common-gss glite-security-delegation-interface \
+ glite-security-trustmanager glite-security-util-java \
+ glite-service-discovery-api-c glite-service-discovery-build-common-cpp \
+ globus-authz globus-authz-callout-error globus-callout globus-common \
+ globus-core globus-ftp-client globus-ftp-control globus-gass-cache \
+ globus-gass-cache-program globus-gass-copy globus-gass-server-ez \
+ globus-gass-transfer globus-gatekeeper globus-gfork globus-gram-audit \
+ globus-gram-client globus-gram-client-tools globus-gram-job-manager \
+ globus-gram-job-manager-callout-error globus-gram-job-manager-condor \
+ globus-gram-job-manager-fork globus-gram-job-manager-lsf \
+ globus-gram-job-manager-managedfork globus-gram-job-manager-pbs \
+ globus-gram-job-manager-scripts globus-gram-job-manager-sge \
+ globus-gram-protocol globus-gridftp-server globus-gridftp-server-control \
+ globus-gridmap-callout-error globus-gsi-callback globus-gsi-cert-utils \
+ globus-gsi-credential globus-gsi-openssl-error globus-gsi-proxy-core \
+ globus-gsi-proxy-ssl globus-gsi-sysconfig globus-gssapi-error \
+ globus-gssapi-gsi globus-gss-assist globus-io globus-openssl-module \
+ globus-proxy-utils globus-rsl globus-scheduler-event-generator \
+ globus-simple-ca globus-usage globus-xio globus-xio-gsi-driver \
+ globus-xioperf globus-xio-pipe-driver globus-xio-popen-driver \
+ globus-xio-udt-driver gram-state graphtool gratia gratia-probe \
+ gratia-reporting-email gridftp-hdfs grid-packaging-tools gsh gsi-openssh \
+ gums hadoop htcondor-ce I2util \
+ igtf-ca-certs igtf-ca-certs-compat javascriptrrd jetty jglobus joda-time \
+ koji koji-plugin-sign lcas-lcmaps-gt4-interface lcgdm lcg-info \
+ lcg-infosites lcg-util lcg-utils lcmaps lcmaps-plugins-basic \
+ lcmaps-plugins-glexec-tracking lcmaps-plugins-gums-client \
+ lcmaps-plugins-scas-client lcmaps-plugins-verify-proxy llrun mash maven22 \
+ maven3 mkgltempdir myproxy ndt netlogger npad nuttcp oasis-config osg-build \
+ osg-ca-certs osg-ca-certs-compat osg-ca-certs-updater osg-ca-scripts osg-ce \
+ osg-cert-scripts osg-cleanup osg-client osg-condor-flock osg-configure \
+ osg-control osg-discovery osg-display-data osg-gridftp osg-gridftp-hdfs \
+ osg-gridftp-xrootd osg-gums osg-info-services osg-java7-compat \
+ osg-make-vomsdir osg-measurements-metrics-db osg-measurements-metrics-web \
+ osg-oasis osg-pki-tools osg-release osg-release-itb osg-se-bestman \
+ osg-se-bestman-xrootd osg-se-hadoop osg-site-verify osg-site-web-page \
+ osg-system-profiler osg-test osg-tested-internal osg-version osg-vo-map \
+ osg-voms osg-webapp-common osg-wn-client owamp pakiti pegasus \
+ privilege-xacml protobuf rsv rsv-consumers-zabbix rsv-perfsonar \
+ saml2-xacml2-c-lib slf4j uberftp udt vo-client voms voms-admin-client \
+ voms-admin-server voms-api-java voms-mysql-plugin web100_userland xacml \
+ xalan-j2 xrootd xrootd4 xrootd-cmstfc xrootd-dsi xrootd-hdfs xrootd-lcmaps \
+ xrootd-status-probe xrootd-voms-plugin zookeeper

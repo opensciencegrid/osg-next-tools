@@ -1,0 +1,209 @@
+CGSI-gSOAP: globus-gss-assist globus-gssapi-gsi voms
+bestman2: cog-jglobus-axis emi-trustmanager emi-trustmanager-axis gums jetty \
+ jglobus joda-time osg-java7-compat slf4j voms-api-java xalan-j2
+bigtop-jsvc: osg-java7-compat
+blahp: condor glite-build-common-cpp globus-gsi-cert-utils \
+ globus-gsi-credential globus-gsi-proxy-core globus-gss-assist
+bwctl: I2util
+cctools: cvmfs xrootd4
+cog-jglobus-axis: jglobus osg-java7-compat
+condor: blahp cmake glite-ce-cream-client-api-c glite-ce-cream-utils \
+ glite-lbjp-common-gsoap-plugin globus-callout globus-common \
+ globus-ftp-client globus-ftp-control globus-gass-server-ez \
+ globus-gass-transfer globus-gram-client globus-gram-protocol \
+ globus-gsi-callback globus-gsi-cert-utils globus-gsi-credential \
+ globus-gsi-openssl-error globus-gsi-proxy-core globus-gsi-proxy-ssl \
+ globus-gsi-sysconfig globus-gss-assist globus-gssapi-error \
+ globus-gssapi-gsi globus-io globus-openssl-module globus-rsl globus-xio voms
+cvmfs: cmake
+dcache-srmclient: maven22 osg-java7-compat
+dcap: globus-gssapi-gsi
+edg-gridftp-client: globus-common globus-ftp-client globus-gssapi-error \
+ globus-xio
+emi-trustmanager: osg-java7-compat
+emi-trustmanager-axis: emi-trustmanager osg-java7-compat
+emi-trustmanager-tomcat: emi-trustmanager osg-java7-compat
+gfal: CGSI-gSOAP dcap globus-common globus-ftp-client lcgdm voms
+glexec: lcmaps
+glite-ce-cream-client-api-c: condor glite-build-common-cpp glite-ce-wsdl \
+ glite-lbjp-common-gsoap-plugin voms
+glite-data-delegation-api-c: CGSI-gSOAP glite-build-common-cpp \
+ glite-data-build glite-security-delegation-interface globus-gss-assist \
+ globus-gssapi-gsi
+glite-data-delegation-cli: CGSI-gSOAP glite-build-common-cpp \
+ glite-data-build glite-data-delegation-api-c glite-data-util-c \
+ glite-service-discovery-api-c globus-core globus-gsi-sysconfig \
+ globus-gss-assist globus-gssapi-gsi
+glite-data-transfer-interface: osg-java7-compat
+glite-data-util-c: glite-build-common-cpp glite-service-discovery-api-c \
+ glite-service-discovery-build-common-cpp globus-core globus-gsi-sysconfig
+glite-fts-client: CGSI-gSOAP glite-build-common-cpp glite-data-build \
+ glite-data-delegation-cli glite-data-transfer-interface glite-data-util-c \
+ globus-gss-assist globus-gssapi-gsi
+glite-jobid-api-cpp: glite-jobid-api-c
+glite-lbjp-common-gsoap-plugin: glite-lbjp-common-gss globus-gssapi-gsi
+glite-lbjp-common-gss: globus-gssapi-gsi
+glite-security-trustmanager: glite-security-util-java osg-java7-compat \
+ voms-api-java
+glite-security-util-java: osg-java7-compat voms-api-java
+glite-service-discovery-api-c: glite-build-common-cpp
+globus-authz: globus-authz-callout-error globus-callout globus-common \
+ globus-core globus-gssapi-gsi grid-packaging-tools
+globus-authz-callout-error: globus-common globus-core grid-packaging-tools
+globus-callout: globus-common globus-core grid-packaging-tools
+globus-common: globus-core grid-packaging-tools
+globus-core: grid-packaging-tools
+globus-ftp-client: globus-common globus-core globus-ftp-control \
+ globus-gsi-callback globus-gsi-credential globus-gsi-sysconfig \
+ globus-gssapi-gsi globus-xio globus-xio-popen-driver grid-packaging-tools
+globus-ftp-control: globus-common globus-core globus-gss-assist \
+ globus-gssapi-error globus-gssapi-gsi globus-io globus-xio \
+ grid-packaging-tools
+globus-gass-cache: globus-common globus-core grid-packaging-tools
+globus-gass-cache-program: globus-common globus-core globus-gass-cache \
+ globus-gass-copy globus-gass-server-ez globus-gass-transfer \
+ globus-gram-client grid-packaging-tools
+globus-gass-copy: globus-common globus-core globus-ftp-client \
+ globus-ftp-control globus-gass-transfer globus-gsi-sysconfig \
+ globus-gssapi-error globus-gssapi-gsi globus-io grid-packaging-tools
+globus-gass-server-ez: globus-common globus-core globus-gass-transfer \
+ globus-gss-assist globus-gssapi-gsi grid-packaging-tools
+globus-gass-transfer: globus-common globus-core globus-gss-assist \
+ globus-gssapi-gsi globus-io grid-packaging-tools
+globus-gatekeeper: globus-common globus-core globus-gss-assist \
+ globus-gssapi-gsi grid-packaging-tools
+globus-gfork: globus-common globus-core globus-xio grid-packaging-tools
+globus-gram-audit: globus-core grid-packaging-tools
+globus-gram-client: globus-common globus-core globus-gram-protocol \
+ globus-gss-assist globus-io globus-rsl grid-packaging-tools
+globus-gram-client-tools: globus-common globus-core globus-gass-server-ez \
+ globus-gass-transfer globus-gram-client globus-gram-protocol \
+ globus-gss-assist globus-rsl grid-packaging-tools
+globus-gram-job-manager: globus-callout globus-common globus-core \
+ globus-gass-cache globus-gass-transfer \
+ globus-gram-job-manager-callout-error globus-gram-protocol \
+ globus-gsi-credential globus-gsi-sysconfig globus-gss-assist \
+ globus-gssapi-gsi globus-rsl globus-scheduler-event-generator globus-usage \
+ globus-xio globus-xio-popen-driver grid-packaging-tools
+globus-gram-job-manager-callout-error: globus-common globus-core \
+ grid-packaging-tools
+globus-gram-job-manager-condor: globus-core grid-packaging-tools
+globus-gram-job-manager-fork: globus-common globus-core globus-gram-protocol \
+ globus-scheduler-event-generator globus-xio grid-packaging-tools
+globus-gram-job-manager-lsf: globus-common globus-core globus-gram-protocol \
+ globus-scheduler-event-generator globus-xio grid-packaging-tools
+globus-gram-job-manager-pbs: globus-common globus-core \
+ globus-scheduler-event-generator grid-packaging-tools
+globus-gram-job-manager-scripts: globus-core grid-packaging-tools
+globus-gram-job-manager-sge: globus-common globus-core \
+ globus-scheduler-event-generator grid-packaging-tools
+globus-gram-protocol: globus-common globus-core globus-gss-assist \
+ globus-gssapi-gsi globus-io grid-packaging-tools
+globus-gridftp-server: globus-authz globus-common globus-core \
+ globus-ftp-control globus-gfork globus-gridftp-server-control \
+ globus-gsi-credential globus-gss-assist globus-usage globus-xio \
+ globus-xio-gsi-driver grid-packaging-tools
+globus-gridftp-server-control: globus-common globus-core \
+ globus-gsi-openssl-error globus-gss-assist globus-gssapi-error \
+ globus-gssapi-gsi globus-xio globus-xio-gsi-driver globus-xio-pipe-driver \
+ grid-packaging-tools
+globus-gridmap-callout-error: globus-common globus-core globus-gssapi-error \
+ grid-packaging-tools
+globus-gsi-callback: globus-common globus-core globus-gsi-cert-utils \
+ globus-gsi-openssl-error globus-gsi-proxy-ssl globus-gsi-sysconfig \
+ globus-openssl-module grid-packaging-tools
+globus-gsi-cert-utils: globus-common globus-core globus-gsi-openssl-error \
+ globus-gsi-proxy-ssl globus-openssl-module grid-packaging-tools
+globus-gsi-credential: globus-common globus-core globus-gsi-callback \
+ globus-gsi-cert-utils globus-gsi-openssl-error globus-gsi-proxy-ssl \
+ globus-gsi-sysconfig grid-packaging-tools
+globus-gsi-openssl-error: globus-common globus-core grid-packaging-tools
+globus-gsi-proxy-core: globus-common globus-core globus-gsi-cert-utils \
+ globus-gsi-credential globus-gsi-openssl-error globus-gsi-proxy-ssl \
+ globus-gsi-sysconfig globus-openssl-module grid-packaging-tools
+globus-gsi-proxy-ssl: globus-core grid-packaging-tools
+globus-gsi-sysconfig: globus-common globus-core globus-gsi-openssl-error \
+ globus-openssl-module grid-packaging-tools
+globus-gss-assist: globus-callout globus-common globus-core \
+ globus-gsi-cert-utils globus-gsi-credential globus-gsi-sysconfig \
+ globus-gssapi-gsi grid-packaging-tools
+globus-gssapi-error: globus-common globus-core globus-gss-assist \
+ globus-gssapi-gsi grid-packaging-tools
+globus-gssapi-gsi: globus-common globus-core globus-gsi-callback \
+ globus-gsi-cert-utils globus-gsi-credential globus-gsi-openssl-error \
+ globus-gsi-proxy-core globus-gsi-sysconfig globus-openssl-module \
+ grid-packaging-tools
+globus-io: globus-common globus-core globus-gss-assist globus-gssapi-error \
+ globus-gssapi-gsi globus-xio globus-xio-gsi-driver grid-packaging-tools
+globus-openssl-module: globus-common globus-core globus-gsi-openssl-error \
+ globus-gsi-proxy-ssl grid-packaging-tools
+globus-proxy-utils: globus-common globus-core globus-gsi-callback \
+ globus-gsi-cert-utils globus-gsi-credential globus-gsi-openssl-error \
+ globus-gsi-proxy-core globus-gsi-proxy-ssl globus-gsi-sysconfig \
+ globus-gss-assist globus-openssl-module grid-packaging-tools
+globus-rsl: globus-common globus-core grid-packaging-tools
+globus-scheduler-event-generator: globus-common globus-core \
+ globus-gram-protocol globus-xio globus-xio-gsi-driver grid-packaging-tools
+globus-simple-ca: globus-core grid-packaging-tools
+globus-usage: globus-common globus-core globus-xio grid-packaging-tools
+globus-xio: globus-common globus-core grid-packaging-tools
+globus-xio-gsi-driver: globus-common globus-core globus-gss-assist \
+ globus-gssapi-error globus-gssapi-gsi globus-xio grid-packaging-tools
+globus-xio-pipe-driver: globus-common globus-core globus-xio \
+ grid-packaging-tools
+globus-xio-popen-driver: globus-common globus-core globus-xio \
+ grid-packaging-tools
+globus-xio-udt-driver: globus-common globus-core globus-xio \
+ grid-packaging-tools udt
+globus-xioperf: globus-common globus-core globus-xio grid-packaging-tools
+gratia: osg-java7-compat
+gridftp-hdfs: globus-common globus-gridftp-server hadoop osg-java7-compat
+gsi-openssh: globus-common globus-core globus-gss-assist globus-usage \
+ grid-packaging-tools
+gums: emi-trustmanager emi-trustmanager-axis jglobus joda-time maven22 \
+ osg-java7-compat voms-api-java xalan-j2
+hadoop: cmake maven3 osg-java7-compat protobuf
+htcondor-ce: cmake condor globus-rsl
+jglobus: maven22 osg-java7-compat
+joda-time: osg-java7-compat
+lcas-lcmaps-gt4-interface: globus-common globus-core \
+ globus-gridmap-callout-error globus-gsi-callback globus-gsi-credential \
+ globus-gsi-proxy-core globus-gss-assist globus-gssapi-error \
+ globus-gssapi-gsi lcmaps
+lcg-util: CGSI-gSOAP gfal globus-common voms
+lcg-utils: CGSI-gSOAP gfal glite-build-common-cpp globus-ftp-client \
+ globus-gass-copy voms
+lcgdm: CGSI-gSOAP globus-common globus-ftp-client globus-gass-copy \
+ globus-gsi-callback globus-gsi-credential globus-gss-assist \
+ globus-gssapi-gsi voms
+lcmaps: globus-common globus-core globus-gsi-credential globus-gss-assist \
+ globus-gssapi-gsi voms
+lcmaps-plugins-basic: lcmaps
+lcmaps-plugins-glexec-tracking: lcmaps
+lcmaps-plugins-scas-client: lcmaps xacml
+lcmaps-plugins-verify-proxy: lcmaps
+myproxy: globus-common globus-core globus-gsi-callback globus-gsi-cert-utils \
+ globus-gsi-credential globus-gsi-proxy-core globus-gsi-sysconfig \
+ globus-gss-assist globus-gssapi-gsi globus-proxy-utils globus-usage \
+ grid-packaging-tools voms
+ndt: I2util osg-java7-compat web100_userland
+npad: web100_userland
+pegasus: osg-java7-compat
+privilege-xacml: emi-trustmanager emi-trustmanager-axis jglobus joda-time \
+ maven3 osg-java7-compat slf4j voms-api-java
+slf4j: maven22 osg-java7-compat
+uberftp: globus-gssapi-gsi grid-packaging-tools
+voms: globus-gss-assist globus-gssapi-gsi
+voms-admin-server: emi-trustmanager emi-trustmanager-axis maven22 \
+ osg-java7-compat
+voms-api-java: osg-java7-compat
+xalan-j2: osg-java7-compat
+xrootd: cmake
+xrootd-cmstfc: cmake xrootd xrootd4
+xrootd-dsi: globus-common globus-gridftp-server
+xrootd-hdfs: cmake hadoop osg-java7-compat xrootd4
+xrootd-lcmaps: cmake lcmaps xrootd4
+xrootd-status-probe: xrootd4
+xrootd-voms-plugin: cmake voms xrootd xrootd4
+xrootd4: cmake
+zookeeper: maven3 osg-java7-compat
