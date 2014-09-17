@@ -7,8 +7,8 @@ all: $(PKGS)
 
 $(PKGS):
 	@echo $@
-	@sleep $(SLEEP)
 
+#@sleep $(SLEEP)
 # not gonna try these for now...
 
 # these break currently
@@ -33,9 +33,13 @@ skips:
 	@$(MAKE) -k --no-print-directory SKIP="$(SKIPS)" 2>/dev/null || :
 
 sentinels:
-	@(osg-koji list-tagged --quiet osg-3.2-el7-development; \
-	  osg-koji list-tagged --quiet osg-el7-internal \
-	 ) | awk '{print $$1}' | perl -lpe 's/(-[^-]+){2}$$//' | xargs touch
+	@for pkg in $$( (osg-koji list-tagged --quiet osg-3.2-el7-development; \
+	                 osg-koji list-tagged --quiet osg-el7-internal \
+	                ) | awk '{print $$1}' ); do \
+	    vr=$$(echo $$pkg | grep -oP '(-[^-]+){2}$$' | cut -c 2-); \
+	    n=$$(echo $$pkg | perl -lpe 's/(-[^-]+){2}$$//'); \
+	    echo "$$vr" > "$$n"; \
+	done
 	@make -k 2>/dev/null | fgrep -xf <(ls) | xargs touch
 
 list-all:
