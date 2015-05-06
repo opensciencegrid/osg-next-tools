@@ -134,3 +134,9 @@ osg-koji add-external-repo -t dist-$EL-build -p 10 dist-$EL-centos
 # at some point we can add jpackage7...
 #osg-koji add-external-repo -t osg-3.2-el7-build -p 9 jpackage7-bin
 
+
+
+echo "IF YOU HAVE CREATED NEW BUILD TAGS, BE SURE TO EDIT"
+echo "/etc/koji-hub/plugins/sign.conf AND SET UP PACKAGE SIGNING FOR THE NEW BUILD"
+echo "TAGS."
+
