@@ -21,13 +21,12 @@ cd $tarballs_dir
 
 for majorver in 3.*; do
     pushd $majorver > /dev/null
-    for dver in "el5" "el6"; do
+    for dver in "el5" "el6" "el7"; do
         for arch in "i386" "x86_64"; do
             for metapkg in "osg-wn-client" "osg-client"; do
-                latest=`ls 3*/${metapkg}-*.${dver}.${arch}.tar.gz | $SORT_BY_VERSION | tail -n 1`
-                if [ X$latest = X ] || [ ! -e $latest ]; then
-                    echo WARNING: Tarball not found for $metapkg $dver $arch
-                else
+                file=$(find . -name ${metapkg}-*.${dver}.${arch}.tar.gz -print -quit)
+                if test -n "$file"; then
+                   latest=`ls 3*/${metapkg}-*.${dver}.${arch}.tar.gz | $SORT_BY_VERSION | tail -n 1`
                    symlink=${metapkg}-latest.${dver}.${arch}.tar.gz
                    ln -sf $latest $symlink
                 fi
