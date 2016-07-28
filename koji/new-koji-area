@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# create new set of koji tags for a specific project
+
+# edit as appropriate
+
+NAME=globus
+EL=el6
+SERIES=3.3       # or upcoming
+ARCHES="x86_64"  # or "i386 x86_64"
+
+osg-koji add-tag --arches="$ARCHES" $NAME-$EL
+osg-koji add-tag --arches="$ARCHES" $NAME-$EL-build
+
+osg-koji add-tag-inheritance --priority=1 --noconfig $NAME-$EL       osg-$EL
+osg-koji add-tag-inheritance --priority=1            $NAME-$EL-build $NAME-$EL
+osg-koji add-tag-inheritance --priority=2            $NAME-$EL-build osg-$SERIES-$EL-build
+
+osg-koji add-target $NAME-$EL             $NAME-$EL-build $NAME-$EL
+osg-koji add-target kojira-fake-$NAME-$EL $NAME-$EL       kojira-fake
+
