@@ -1,0 +1,79 @@
+#!/bin/bash
+set -xe
+
+# create koji tags/targets/etc for new osg series
+
+SERIES=3.4
+
+for EL in el6 el7; do
+
+
+    ### new tags ###
+
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-build
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-contrib
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-development
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-empty
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-prerelease
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-release
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-release-build
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-testing
+
+
+    ### tag permissions ###
+
+    # osg-koji list-tags --verbose | egrep 'osg|dist|hcc' | grep el6 \
+    # | grep -v release-3 | fgrep -v 3.1 \
+    # | perl -lne '
+    #   s/el6/el7/g;
+    #   m/^(\S+)\s*(?:\[(LOCKED)\])?\s*(?:\[(\S+) perm required\])?/;
+    #   print join " ", "osg-koji edit-tag", $3 && "--perm=$3", $2 && "--lock", $1
+    #   if $2 || $3'
+
+    osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release
+    osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release-build
+
+    ### tag inheritance ###
+
+    # select 'osg-koji add-tag-inheritance --priority=' || priority
+    #        || case when noconfig then ' --noconfig ' else ' ' end
+    #        || replace(b.name,'el6','el7') || ' ' 
+    #        || replace(c.name,'el6','el7') as cmdline
+    #   from tag_inheritance a
+    #   left join tag b
+    #     on a.tag_id = b.id
+    #   left join tag c
+    #     on a.parent_id = c.id
+    #  where active
+    #    and b.name like '%el6%'
+    #  order by b.name,priority;
+
+    osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-contrib      osg-$EL
+    osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-empty        osg-$EL
+    osg-koji add-tag-inheritance --priority=1 --noconfig osg-$SERIES-$EL-prerelease   osg-$EL
+
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-build          osg-$SERIES-$EL-development
+    osg-koji add-tag-inheritance --priority=2  osg-$SERIES-$EL-build          osg-$EL-internal
+    osg-koji add-tag-inheritance --priority=10 osg-$SERIES-$EL-build          dist-$EL-build
+    osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-contrib        dist-$EL
+    osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-development    osg-$SERIES-$EL-testing
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-empty          dist-$EL
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-release        osg-$EL
+    osg-koji add-tag-inheritance --priority=9  osg-$SERIES-$EL-release-build  osg-$SERIES-$EL-release
+    osg-koji add-tag-inheritance --priority=10 osg-$SERIES-$EL-release-build  dist-$EL-build
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-testing        osg-$SERIES-$EL-release
+
+    ### build targets ###
+
+    # osg-koji list-targets --quiet | column -t | grep el6 | fgrep -ve -3.1- | sed 's/el6/el7/g; s/^/osg-koji add-target /'
+
+    osg-koji add-target kojira-fake-osg-$SERIES-$EL-development   osg-$SERIES-$EL-development   kojira-fake
+    osg-koji add-target kojira-fake-osg-$SERIES-$EL-release-build osg-$SERIES-$EL-release-build kojira-fake
+    osg-koji add-target osg-$SERIES-$EL                           osg-$SERIES-$EL-build         osg-$SERIES-$EL-development
+
+done
+
+echo "IF YOU HAVE CREATED NEW BUILD TAGS, BE SURE TO EDIT"
+echo "/etc/koji-hub/plugins/sign.conf AND SET UP PACKAGE SIGNING FOR THE NEW BUILD"
+echo "TAGS."
+
