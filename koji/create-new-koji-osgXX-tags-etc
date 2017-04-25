@@ -19,6 +19,7 @@ for EL in el6 el7; do
     osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-release-build
     osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-testing
 
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-bootstrap
 
     ### tag permissions ###
 
@@ -54,6 +55,7 @@ for EL in el6 el7; do
 
     osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-build          osg-$SERIES-$EL-development
     osg-koji add-tag-inheritance --priority=2  osg-$SERIES-$EL-build          osg-$EL-internal
+    osg-koji add-tag-inheritance --priority=4  osg-$SERIES-$EL-build          osg-$SERIES-$EL-bootstrap
     osg-koji add-tag-inheritance --priority=10 osg-$SERIES-$EL-build          dist-$EL-build
     osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-contrib        dist-$EL
     osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-development    osg-$SERIES-$EL-testing
