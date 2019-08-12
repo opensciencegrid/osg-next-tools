@@ -5,11 +5,19 @@ set -xe
 
 EL=el7
 
+SERIES=3.5  # for build tag inheritance
+
 osg-koji add-tag --arches=x86_64 devops-$EL-production
 osg-koji add-tag --arches=x86_64 devops-$EL-itb
+osg-koji add-tag --arches=x86_64 devops-$EL-build
 
 osg-koji add-tag-inheritance --noconfig devops-$EL-production  osg-$EL
 osg-koji add-tag-inheritance devops-$EL-itb devops-$EL-production
+
+osg-koji add-tag-inheritance --priority=1 devops-$EL-build devops-$EL-itb
+osg-koji add-tag-inheritance --priority=2 devops-$EL-build osg-$SERIES-$EL-build
+
+osg-koji add-target devops-$EL devops-$EL-build devops-$EL-itb
 
 osg-koji add-target {kojira-fake-,}devops-$EL-production kojira-fake
 osg-koji add-target {kojira-fake-,}devops-$EL-itb kojira-fake
