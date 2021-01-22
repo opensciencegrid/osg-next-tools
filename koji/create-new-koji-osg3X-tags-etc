@@ -3,9 +3,9 @@ set -xe
 
 # create koji tags/targets/etc for new osg series
 
-SERIES=3.5
+SERIES=3.6
 
-for EL in el7; do
+for EL in el7 el8; do
 
 
     ### new tags ###
@@ -22,6 +22,13 @@ for EL in el7; do
 
     osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-bootstrap
 
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-build
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-development
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-prerelease
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-release
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-testing
+    osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-rolling
+
     ### tag permissions ###
 
     # osg-koji list-tags --verbose | egrep 'osg|dist|hcc' | grep el6 \
@@ -34,6 +41,7 @@ for EL in el7; do
 
     osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release
     osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release-build
+    osg-koji edit-tag --perm=release-team --lock osg-$SERIES-upcoming-$EL-release
 
     ### tag inheritance ###
 
@@ -53,6 +61,7 @@ for EL in el7; do
     osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-contrib      osg-$EL
     osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-empty        osg-$EL
     osg-koji add-tag-inheritance --priority=1 --noconfig osg-$SERIES-$EL-prerelease   osg-$EL
+    osg-koji add-tag-inheritance --priority=0 --noconfig osg-$SERIES-upcoming-$EL-prerelease  osg-$EL
 
     osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-build          osg-$SERIES-$EL-development
     osg-koji add-tag-inheritance --priority=2  osg-$SERIES-$EL-build          osg-$EL-internal
@@ -67,6 +76,13 @@ for EL in el7; do
     osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-testing        osg-$SERIES-$EL-release
     osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-rolling        osg-$SERIES-$EL-release
 
+    osg-koji add-tag-inheritance --priority=3  osg-$SERIES-upcoming-$EL-build         osg-$SERIES-$EL-build
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-upcoming-$EL-build         osg-$SERIES-upcoming-$EL-development
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-upcoming-$EL-development   osg-$SERIES-upcoming-$EL-testing
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-upcoming-$EL-release       osg-$EL
+    osg-koji add-tag-inheritance --priority=0  osg-$SERIES-upcoming-$EL-testing       osg-$SERIES-upcoming-$EL-release
+    osg-koji add-tag-inheritance --priority=1  osg-$SERIES-upcoming-$EL-rolling       osg-$SERIES-upcoming-$EL-release
+
     ### build targets ###
 
     # osg-koji list-targets --quiet | column -t | grep el6 | fgrep -ve -3.1- | sed 's/el6/el7/g; s/^/osg-koji add-target /'
@@ -74,7 +90,10 @@ for EL in el7; do
     osg-koji add-target kojira-fake-osg-$SERIES-$EL-development   osg-$SERIES-$EL-development   kojira-fake
     osg-koji add-target kojira-fake-osg-$SERIES-$EL-release-build osg-$SERIES-$EL-release-build kojira-fake
     osg-koji add-target kojira-fake-osg-$SERIES-$EL-rolling       osg-$SERIES-$EL-rolling       kojira-fake
+    osg-koji add-target kojira-fake-osg-$SERIES-upcoming-$EL-development  osg-$SERIES-upcoming-$EL-development  kojira-fake
+    osg-koji add-target kojira-fake-osg-$SERIES-upcoming-$EL-rolling      osg-$SERIES-upcoming-$EL-rolling      kojira-fake
     osg-koji add-target osg-$SERIES-$EL                           osg-$SERIES-$EL-build         osg-$SERIES-$EL-development
+    osg-koji add-target osg-$SERIES-upcoming-$EL                  osg-$SERIES-upcoming-$EL-build  osg-$SERIES-upcoming-$EL-development
 
 done
 
