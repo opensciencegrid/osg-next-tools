@@ -3,7 +3,7 @@ set -xe
 
 # create koji tags/targets/etc for new elX
 
-EL=el7
+EL=el9
 
 
 ### new tags ###

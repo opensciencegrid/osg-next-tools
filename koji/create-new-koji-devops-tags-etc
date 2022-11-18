@@ -3,9 +3,9 @@ set -xe
 
 # create koji devops tags/targets/etc
 
-EL=el7
+EL=el9
 
-SERIES=3.5  # for build tag inheritance
+SERIES=3.6  # for build tag inheritance
 
 osg-koji add-tag --arches=x86_64 devops-$EL-production
 osg-koji add-tag --arches=x86_64 devops-$EL-itb

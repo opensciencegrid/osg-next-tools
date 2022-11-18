@@ -5,7 +5,7 @@ set -xe
 
 SERIES=3.6
 
-for EL in el7 el8; do
+for EL in el7 el8 el9; do
 
 
     ### new tags ###
