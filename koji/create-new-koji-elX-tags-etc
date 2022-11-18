@@ -1,9 +1,8 @@
 #!/bin/bash
 set -xe
 
-# create koji tags/targets/etc for new osg series/elX
+# create koji tags/targets/etc for new elX
 
-SERIES=3.2
 EL=el7
 
 
@@ -11,14 +10,6 @@ EL=el7
 
 osg-koji add-tag --arches=x86_64 dist-$EL
 osg-koji add-tag --arches=x86_64 dist-$EL-build
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-build
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-contrib
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-development
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-empty
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-prerelease
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-release
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-release-build
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-testing
 osg-koji add-tag --arches=x86_64 osg-$EL
 osg-koji add-tag --arches=x86_64 osg-$EL-internal
 osg-koji add-tag --arches=x86_64 osg-$EL-internal-build
@@ -44,8 +35,6 @@ osg-koji add-tag --arches=x86_64 hcc-$EL-testing
 #   print join " ", "osg-koji edit-tag", $3 && "--perm=$3", $2 && "--lock", $1
 #   if $2 || $3'
 
-osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release
-osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release-build
 osg-koji edit-tag --perm=release-team --lock osg-upcoming-$EL-release
 osg-koji edit-tag --perm=admin        --lock dist-$EL
 osg-koji edit-tag --perm=admin        --lock dist-$EL-build
@@ -70,34 +59,19 @@ osg-koji edit-tag --perm=hcc-build hcc-$EL-testing
 #    and b.name like '%el6%'
 #  order by b.name,priority;
 
-osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-contrib      osg-$EL
-osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-empty        osg-$EL
-osg-koji add-tag-inheritance --priority=1 --noconfig osg-$SERIES-$EL-prerelease   osg-$EL
 osg-koji add-tag-inheritance --priority=1 --noconfig osg-$EL-internal             osg-$EL
 osg-koji add-tag-inheritance --priority=0 --noconfig osg-upcoming-$EL-prerelease  osg-$EL
 
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-build          osg-$SERIES-$EL-development
-osg-koji add-tag-inheritance --priority=2  osg-$SERIES-$EL-build          osg-$EL-internal
-osg-koji add-tag-inheritance --priority=10 osg-$SERIES-$EL-build          dist-$EL-build
-osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-contrib        dist-$EL
-osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-development    osg-$SERIES-$EL-testing
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-empty          dist-$EL
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-release        osg-$EL
-osg-koji add-tag-inheritance --priority=9  osg-$SERIES-$EL-release-build  osg-$SERIES-$EL-release
-osg-koji add-tag-inheritance --priority=10 osg-$SERIES-$EL-release-build  dist-$EL-build
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-testing        osg-$SERIES-$EL-release
 osg-koji add-tag-inheritance --priority=0  osg-$EL                        dist-$EL
 osg-koji add-tag-inheritance --priority=5  osg-$EL-internal-build         dist-$EL
 osg-koji add-tag-inheritance --priority=4  osg-$EL-internal-build         dist-$EL-build
 osg-koji add-tag-inheritance --priority=1  osg-$EL-internal-build         osg-$EL-internal
-osg-koji add-tag-inheritance --priority=3  osg-upcoming-$EL-build         osg-$SERIES-$EL-build
 osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-build         osg-upcoming-$EL-development
 osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-development   osg-upcoming-$EL-testing
 osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-release       osg-$EL
 osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-testing       osg-upcoming-$EL-release
 
 osg-koji add-tag-inheritance --priority=0            hcc-$EL-build    hcc-$EL-testing
-osg-koji add-tag-inheritance --priority=1            hcc-$EL-build    osg-$SERIES-$EL-development
 osg-koji add-tag-inheritance --priority=5            hcc-$EL-build    dist-$EL-build
 osg-koji add-tag-inheritance --priority=1            hcc-$EL-testing  hcc-$EL-release
 osg-koji add-tag-inheritance --priority=1 --noconfig hcc-$EL-release  hcc-$EL
@@ -108,11 +82,7 @@ osg-koji add-tag-inheritance --priority=1 --noconfig hcc-$EL-release  hcc-$EL
 # osg-koji list-targets --quiet | column -t | grep el6 | fgrep -ve -3.1- | sed 's/el6/el7/g; s/^/osg-koji add-target /'
 
 osg-koji add-target dist-$EL-build                            dist-$EL-build                dist-$EL-build
-osg-koji add-target kojira-fake-osg-$SERIES-$EL-development   osg-$SERIES-$EL-development   kojira-fake
-osg-koji add-target kojira-fake-osg-$SERIES-$EL-release-build osg-$SERIES-$EL-release-build kojira-fake
 osg-koji add-target kojira-fake-osg-upcoming-$EL-development  osg-upcoming-$EL-development  kojira-fake
-osg-koji add-target osg-$SERIES-$EL                           osg-$SERIES-$EL-build         osg-$SERIES-$EL-development
-osg-koji add-target osg-$EL                                   osg-$SERIES-$EL-build         osg-$SERIES-$EL-development
 osg-koji add-target osg-$EL-internal                          osg-$EL-internal-build        osg-$EL-internal
 osg-koji add-target osg-upcoming-$EL                          osg-upcoming-$EL-build        osg-upcoming-$EL-development
 
