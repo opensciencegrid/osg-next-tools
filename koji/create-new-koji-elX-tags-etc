@@ -97,9 +97,40 @@ osg-koji add-target kojira-fake-hcc-$EL  hcc-$EL        kojira-fake
 #   echo osg-koji add-external-repo -t $tag -p $pri $repo
 # done
 
-osg-koji add-external-repo -t dist-$EL-build -p 5  dist-$EL-epel
-osg-koji add-external-repo -t dist-$EL-build -p 9  dist-$EL-centos-updates
-osg-koji add-external-repo -t dist-$EL-build -p 10 dist-$EL-centos
+case $EL in
+  el7 )
+    osg-koji add-external-repo -t dist-$EL-build -p 5  dist-$EL-epel
+    osg-koji add-external-repo -t dist-$EL-build -p 9  dist-$EL-centos-updates
+    osg-koji add-external-repo -t dist-$EL-build -p 10 dist-$EL-centos
+    ;;
+
+  el8 )
+    osg-koji add-external-repo -t dist-$EL-build -p 5  dist-r8-PowerTools \
+        'https://mirrors.rit.edu/rocky/8/PowerTools/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 6  dist-r8-BaseOS     \
+        'https://mirrors.rit.edu/rocky/8/BaseOS/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 8  dist-r8-extras     \
+        'https://mirrors.rit.edu/rocky/8/extras/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 7  dist-r8-AppStream  \
+        'http://repo.accre.vanderbilt.edu/pub/rocky/8/AppStream/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 13 dist-el8-epel      \
+        'http://mirror.chtc.wisc.edu/epel/8/Everything/$arch/'
+    osg-koji add-external-repo -t dist-$EL-build -p 14 local-el8          \
+        'http://vdt.cs.wisc.edu/rpm-build-repos/el8/'
+    ;;
+
+  el9 )
+    osg-koji add-external-repo -t dist-$EL-build -p 6  dist-r9-BaseOS     \
+        'https://mirrors.rit.edu/rocky/9/BaseOS/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 8  dist-r9-extras     \
+        'https://mirrors.rit.edu/rocky/9/extras/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 7  dist-r9-AppStream  \
+        'https://mirrors.rit.edu/rocky/9/AppStream/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 13 dist-el9-epel      \
+        'https://dl.fedoraproject.org/pub/epel/9/Everything/'
+    ;;
+esac
+
 
 # at some point we can add jpackage7...
 #osg-koji add-external-repo -t osg-3.2-el7-build -p 9 jpackage7-bin
