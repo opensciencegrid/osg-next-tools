@@ -116,7 +116,7 @@ case $EL in
     osg-koji add-external-repo -t dist-$EL-build -p 7  dist-r9-AppStream  \
         'https://mirrors.rit.edu/rocky/9/AppStream/$arch/os/'
     osg-koji add-external-repo -t dist-$EL-build -p 13 dist-el9-epel      \
-        'https://dl.fedoraproject.org/pub/epel/9/Everything/'
+        'http://mirror.chtc.wisc.edu/epel/9/Everything/$arch/'
     ;;
 esac
 
