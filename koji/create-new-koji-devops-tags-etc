@@ -3,13 +3,15 @@ set -xe
 
 # create koji devops tags/targets/etc
 
-EL=el7
+EL=el9
 
-SERIES=3.5  # for build tag inheritance
+SERIES=3.6  # for build tag inheritance
+
+build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
 osg-koji add-tag --arches=x86_64 devops-$EL-production
 osg-koji add-tag --arches=x86_64 devops-$EL-itb
-osg-koji add-tag --arches=x86_64 devops-$EL-build
+osg-koji add-tag --arches=x86_64 ${build_tag_extras[@]} devops-$EL-build
 
 osg-koji add-tag-inheritance --noconfig devops-$EL-production  osg-$EL
 osg-koji add-tag-inheritance devops-$EL-itb devops-$EL-production

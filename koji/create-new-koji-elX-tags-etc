@@ -1,35 +1,23 @@
 #!/bin/bash
 set -xe
 
-# create koji tags/targets/etc for new osg series/elX
+# create koji tags/targets/etc for new elX
 
-SERIES=3.2
-EL=el7
+EL=el9
+
+build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
 
 ### new tags ###
 
 osg-koji add-tag --arches=x86_64 dist-$EL
-osg-koji add-tag --arches=x86_64 dist-$EL-build
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-build
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-contrib
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-development
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-empty
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-prerelease
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-release
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-release-build
-osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-testing
+osg-koji add-tag --arches=x86_64 ${build_tag_extras[@]} dist-$EL-build
 osg-koji add-tag --arches=x86_64 osg-$EL
 osg-koji add-tag --arches=x86_64 osg-$EL-internal
 osg-koji add-tag --arches=x86_64 osg-$EL-internal-build
-osg-koji add-tag --arches=x86_64 osg-upcoming-$EL-build
-osg-koji add-tag --arches=x86_64 osg-upcoming-$EL-development
-osg-koji add-tag --arches=x86_64 osg-upcoming-$EL-prerelease
-osg-koji add-tag --arches=x86_64 osg-upcoming-$EL-release
-osg-koji add-tag --arches=x86_64 osg-upcoming-$EL-testing
 
 osg-koji add-tag --arches=x86_64 hcc-$EL
-osg-koji add-tag --arches=x86_64 hcc-$EL-build
+osg-koji add-tag --arches=x86_64 ${build_tag_extras[@]} hcc-$EL-build
 osg-koji add-tag --arches=x86_64 hcc-$EL-release
 osg-koji add-tag --arches=x86_64 hcc-$EL-testing
 
@@ -44,9 +32,6 @@ osg-koji add-tag --arches=x86_64 hcc-$EL-testing
 #   print join " ", "osg-koji edit-tag", $3 && "--perm=$3", $2 && "--lock", $1
 #   if $2 || $3'
 
-osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release
-osg-koji edit-tag --perm=release-team --lock osg-$SERIES-$EL-release-build
-osg-koji edit-tag --perm=release-team --lock osg-upcoming-$EL-release
 osg-koji edit-tag --perm=admin        --lock dist-$EL
 osg-koji edit-tag --perm=admin        --lock dist-$EL-build
 
@@ -70,34 +55,14 @@ osg-koji edit-tag --perm=hcc-build hcc-$EL-testing
 #    and b.name like '%el6%'
 #  order by b.name,priority;
 
-osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-contrib      osg-$EL
-osg-koji add-tag-inheritance --priority=2 --noconfig osg-$SERIES-$EL-empty        osg-$EL
-osg-koji add-tag-inheritance --priority=1 --noconfig osg-$SERIES-$EL-prerelease   osg-$EL
 osg-koji add-tag-inheritance --priority=1 --noconfig osg-$EL-internal             osg-$EL
-osg-koji add-tag-inheritance --priority=0 --noconfig osg-upcoming-$EL-prerelease  osg-$EL
 
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-build          osg-$SERIES-$EL-development
-osg-koji add-tag-inheritance --priority=2  osg-$SERIES-$EL-build          osg-$EL-internal
-osg-koji add-tag-inheritance --priority=10 osg-$SERIES-$EL-build          dist-$EL-build
-osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-contrib        dist-$EL
-osg-koji add-tag-inheritance --priority=1  osg-$SERIES-$EL-development    osg-$SERIES-$EL-testing
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-empty          dist-$EL
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-release        osg-$EL
-osg-koji add-tag-inheritance --priority=9  osg-$SERIES-$EL-release-build  osg-$SERIES-$EL-release
-osg-koji add-tag-inheritance --priority=10 osg-$SERIES-$EL-release-build  dist-$EL-build
-osg-koji add-tag-inheritance --priority=0  osg-$SERIES-$EL-testing        osg-$SERIES-$EL-release
 osg-koji add-tag-inheritance --priority=0  osg-$EL                        dist-$EL
 osg-koji add-tag-inheritance --priority=5  osg-$EL-internal-build         dist-$EL
 osg-koji add-tag-inheritance --priority=4  osg-$EL-internal-build         dist-$EL-build
 osg-koji add-tag-inheritance --priority=1  osg-$EL-internal-build         osg-$EL-internal
-osg-koji add-tag-inheritance --priority=3  osg-upcoming-$EL-build         osg-$SERIES-$EL-build
-osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-build         osg-upcoming-$EL-development
-osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-development   osg-upcoming-$EL-testing
-osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-release       osg-$EL
-osg-koji add-tag-inheritance --priority=0  osg-upcoming-$EL-testing       osg-upcoming-$EL-release
 
 osg-koji add-tag-inheritance --priority=0            hcc-$EL-build    hcc-$EL-testing
-osg-koji add-tag-inheritance --priority=1            hcc-$EL-build    osg-$SERIES-$EL-development
 osg-koji add-tag-inheritance --priority=5            hcc-$EL-build    dist-$EL-build
 osg-koji add-tag-inheritance --priority=1            hcc-$EL-testing  hcc-$EL-release
 osg-koji add-tag-inheritance --priority=1 --noconfig hcc-$EL-release  hcc-$EL
@@ -108,13 +73,7 @@ osg-koji add-tag-inheritance --priority=1 --noconfig hcc-$EL-release  hcc-$EL
 # osg-koji list-targets --quiet | column -t | grep el6 | fgrep -ve -3.1- | sed 's/el6/el7/g; s/^/osg-koji add-target /'
 
 osg-koji add-target dist-$EL-build                            dist-$EL-build                dist-$EL-build
-osg-koji add-target kojira-fake-osg-$SERIES-$EL-development   osg-$SERIES-$EL-development   kojira-fake
-osg-koji add-target kojira-fake-osg-$SERIES-$EL-release-build osg-$SERIES-$EL-release-build kojira-fake
-osg-koji add-target kojira-fake-osg-upcoming-$EL-development  osg-upcoming-$EL-development  kojira-fake
-osg-koji add-target osg-$SERIES-$EL                           osg-$SERIES-$EL-build         osg-$SERIES-$EL-development
-osg-koji add-target osg-$EL                                   osg-$SERIES-$EL-build         osg-$SERIES-$EL-development
 osg-koji add-target osg-$EL-internal                          osg-$EL-internal-build        osg-$EL-internal
-osg-koji add-target osg-upcoming-$EL                          osg-upcoming-$EL-build        osg-upcoming-$EL-development
 
 osg-koji add-target hcc-$EL              hcc-$EL-build  hcc-$EL-testing
 osg-koji add-target kojira-fake-hcc-$EL  hcc-$EL        kojira-fake
@@ -127,9 +86,40 @@ osg-koji add-target kojira-fake-hcc-$EL  hcc-$EL        kojira-fake
 #   echo osg-koji add-external-repo -t $tag -p $pri $repo
 # done
 
-osg-koji add-external-repo -t dist-$EL-build -p 5  dist-$EL-epel
-osg-koji add-external-repo -t dist-$EL-build -p 9  dist-$EL-centos-updates
-osg-koji add-external-repo -t dist-$EL-build -p 10 dist-$EL-centos
+case $EL in
+  el7 )
+    osg-koji add-external-repo -t dist-$EL-build -p 5  dist-$EL-epel
+    osg-koji add-external-repo -t dist-$EL-build -p 9  dist-$EL-centos-updates
+    osg-koji add-external-repo -t dist-$EL-build -p 10 dist-$EL-centos
+    ;;
+
+  el8 )
+    osg-koji add-external-repo -t dist-$EL-build -p 5  dist-r8-PowerTools \
+        'https://mirrors.rit.edu/rocky/8/PowerTools/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 6  dist-r8-BaseOS     \
+        'https://mirrors.rit.edu/rocky/8/BaseOS/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 8  dist-r8-extras     \
+        'https://mirrors.rit.edu/rocky/8/extras/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 7  dist-r8-AppStream  \
+        'http://repo.accre.vanderbilt.edu/pub/rocky/8/AppStream/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 13 dist-el8-epel      \
+        'http://mirror.chtc.wisc.edu/epel/8/Everything/$arch/'
+    osg-koji add-external-repo -t dist-$EL-build -p 14 local-el8          \
+        'http://vdt.cs.wisc.edu/rpm-build-repos/el8/'
+    ;;
+
+  el9 )
+    osg-koji add-external-repo -t dist-$EL-build -p 6  dist-r9-BaseOS     \
+        'https://mirrors.rit.edu/rocky/9/BaseOS/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 8  dist-r9-extras     \
+        'https://mirrors.rit.edu/rocky/9/extras/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 7  dist-r9-AppStream  \
+        'https://mirrors.rit.edu/rocky/9/AppStream/$arch/os/'
+    osg-koji add-external-repo -t dist-$EL-build -p 13 dist-el9-epel      \
+        'http://mirror.chtc.wisc.edu/epel/9/Everything/$arch/'
+    ;;
+esac
+
 
 # at some point we can add jpackage7...
 #osg-koji add-external-repo -t osg-3.2-el7-build -p 9 jpackage7-bin
