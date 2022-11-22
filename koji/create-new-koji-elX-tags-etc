@@ -5,11 +5,13 @@ set -xe
 
 EL=el9
 
+build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
+
 
 ### new tags ###
 
 osg-koji add-tag --arches=x86_64 dist-$EL
-osg-koji add-tag --arches=x86_64 dist-$EL-build
+osg-koji add-tag --arches=x86_64 ${build_tag_extras[@]} dist-$EL-build
 osg-koji add-tag --arches=x86_64 osg-$EL
 osg-koji add-tag --arches=x86_64 osg-$EL-internal
 osg-koji add-tag --arches=x86_64 osg-$EL-internal-build
@@ -20,7 +22,7 @@ osg-koji add-tag --arches=x86_64 osg-upcoming-$EL-release
 osg-koji add-tag --arches=x86_64 osg-upcoming-$EL-testing
 
 osg-koji add-tag --arches=x86_64 hcc-$EL
-osg-koji add-tag --arches=x86_64 hcc-$EL-build
+osg-koji add-tag --arches=x86_64 ${build_tag_extras[@]} hcc-$EL-build
 osg-koji add-tag --arches=x86_64 hcc-$EL-release
 osg-koji add-tag --arches=x86_64 hcc-$EL-testing
 

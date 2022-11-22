@@ -5,12 +5,14 @@ set -xe
 
 SERIES=3.6
 
+build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
+
 for EL in el7 el8 el9; do
 
 
     ### new tags ###
 
-    osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-build
+    osg-koji add-tag --arches=x86_64 ${build_tag_extras[@]} osg-$SERIES-$EL-build
     osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-contrib
     osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-development
     osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-empty
@@ -22,7 +24,7 @@ for EL in el7 el8 el9; do
 
     osg-koji add-tag --arches=x86_64 osg-$SERIES-$EL-bootstrap
 
-    osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-build
+    osg-koji add-tag --arches=x86_64 ${build_tag_extras[@]} osg-$SERIES-upcoming-$EL-build
     osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-development
     osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-prerelease
     osg-koji add-tag --arches=x86_64 osg-$SERIES-upcoming-$EL-release
