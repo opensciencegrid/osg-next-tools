@@ -25,31 +25,10 @@ for EL in el8 el9; do
 
     ### tag permissions ###
 
-    # osg-koji list-tags --verbose | egrep 'osg|dist|hcc' | grep el6 \
-    # | grep -v release-3 | fgrep -v 3.1 \
-    # | perl -lne '
-    #   s/el6/el7/g;
-    #   m/^(\S+)\s*(?:\[(LOCKED)\])?\s*(?:\[(\S+) perm required\])?/;
-    #   print join " ", "osg-koji edit-tag", $3 && "--perm=$3", $2 && "--lock", $1
-    #   if $2 || $3'
-
     osg-koji edit-tag --perm=release-team --lock $PREFIX-release
     osg-koji edit-tag --perm=release-team --lock $PREFIX-release-build
 
     ### tag inheritance ###
-
-    # select 'osg-koji add-tag-inheritance --priority=' || priority
-    #        || case when noconfig then ' --noconfig ' else ' ' end
-    #        || replace(b.name,'el6','el7') || ' ' 
-    #        || replace(c.name,'el6','el7') as cmdline
-    #   from tag_inheritance a
-    #   left join tag b
-    #     on a.tag_id = b.id
-    #   left join tag c
-    #     on a.parent_id = c.id
-    #  where active
-    #    and b.name like '%el6%'
-    #  order by b.name,priority;
 
     osg-koji add-tag-inheritance --priority=2 --noconfig $PREFIX-contrib      osg-$EL
     osg-koji add-tag-inheritance --priority=2 --noconfig $PREFIX-empty        osg-$EL
@@ -68,8 +47,6 @@ for EL in el8 el9; do
     osg-koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
 
     ### build targets ###
-
-    # osg-koji list-targets --quiet | column -t | grep el6 | fgrep -ve -3.1- | sed 's/el6/el7/g; s/^/osg-koji add-target /'
 
     osg-koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
     osg-koji add-target kojira-fake-$PREFIX-release-build $PREFIX-release-build kojira-fake
