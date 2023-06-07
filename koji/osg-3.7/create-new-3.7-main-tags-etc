@@ -8,7 +8,7 @@ SERIES=3.7
 build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
 for EL in el8 el9; do
-    PREFIX=osg-$SERIES-$EL
+    PREFIX=osg-$SERIES-main-$EL
 
     ### new tags ###
 
