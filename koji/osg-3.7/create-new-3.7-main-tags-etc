@@ -19,7 +19,6 @@ for EL in el8 el9; do
     osg-koji add-tag --arches=x86_64 $PREFIX_NO_MAIN-empty
     osg-koji add-tag --arches=x86_64 $PREFIX-prerelease
     osg-koji add-tag --arches=x86_64 $PREFIX-release
-    osg-koji add-tag --arches=x86_64 $PREFIX-release-build
     osg-koji add-tag --arches=x86_64 $PREFIX-testing
 
     osg-koji add-tag --arches=x86_64 $PREFIX-bootstrap
@@ -27,7 +26,6 @@ for EL in el8 el9; do
     ### tag permissions ###
 
     osg-koji edit-tag --perm=release-team --lock $PREFIX-release
-    osg-koji edit-tag --perm=release-team --lock $PREFIX-release-build
 
     ### tag inheritance ###
 
@@ -43,14 +41,11 @@ for EL in el8 el9; do
     osg-koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
     osg-koji add-tag-inheritance --priority=0  $PREFIX_NO_MAIN-empty          dist-$EL
     osg-koji add-tag-inheritance --priority=0  $PREFIX-release        osg-$EL
-    osg-koji add-tag-inheritance --priority=9  $PREFIX-release-build  $PREFIX-release
-    osg-koji add-tag-inheritance --priority=10 $PREFIX-release-build  dist-$EL-build
     osg-koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
 
     ### build targets ###
 
     osg-koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
-    osg-koji add-target kojira-fake-$PREFIX-release-build $PREFIX-release-build kojira-fake
     osg-koji add-target $PREFIX                           $PREFIX-build         $PREFIX-development
 
 done
