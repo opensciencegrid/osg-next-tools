@@ -1,14 +1,13 @@
 #!/bin/bash
-set -xe
+set -xeu
 
 # create koji tags/targets/etc for new osg series
 
-SERIES=3.6
+SERIES=3.7
 
 build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
-for EL in el7 el8 el9; do
-
+for EL in el8 el9; do
 
     ### new tags ###
 
