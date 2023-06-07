@@ -9,13 +9,14 @@ build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
 for EL in el8 el9; do
     PREFIX=osg-$SERIES-main-$EL
+    PREFIX_NO_MAIN=osg-$SERIES-$EL
 
     ### new tags ###
 
     osg-koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
-    osg-koji add-tag --arches=x86_64 $PREFIX-contrib
+    osg-koji add-tag --arches=x86_64 $PREFIX_NO_MAIN-contrib
     osg-koji add-tag --arches=x86_64 $PREFIX-development
-    osg-koji add-tag --arches=x86_64 $PREFIX-empty
+    osg-koji add-tag --arches=x86_64 $PREFIX_NO_MAIN-empty
     osg-koji add-tag --arches=x86_64 $PREFIX-prerelease
     osg-koji add-tag --arches=x86_64 $PREFIX-release
     osg-koji add-tag --arches=x86_64 $PREFIX-release-build
@@ -30,17 +31,17 @@ for EL in el8 el9; do
 
     ### tag inheritance ###
 
-    osg-koji add-tag-inheritance --priority=2 --noconfig $PREFIX-contrib      osg-$EL
-    osg-koji add-tag-inheritance --priority=2 --noconfig $PREFIX-empty        osg-$EL
+    osg-koji add-tag-inheritance --priority=2 --noconfig $PREFIX_NO_MAIN-contrib      osg-$EL
+    osg-koji add-tag-inheritance --priority=2 --noconfig $PREFIX_NO_MAIN-empty        osg-$EL
     osg-koji add-tag-inheritance --priority=1 --noconfig $PREFIX-prerelease   osg-$EL
 
     osg-koji add-tag-inheritance --priority=0  $PREFIX-build          $PREFIX-development
     osg-koji add-tag-inheritance --priority=2  $PREFIX-build          osg-$EL-internal
     osg-koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
     osg-koji add-tag-inheritance --priority=10 $PREFIX-build          dist-$EL-build
-    osg-koji add-tag-inheritance --priority=1  $PREFIX-contrib        dist-$EL
+    osg-koji add-tag-inheritance --priority=1  $PREFIX_NO_MAIN-contrib        dist-$EL
     osg-koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
-    osg-koji add-tag-inheritance --priority=0  $PREFIX-empty          dist-$EL
+    osg-koji add-tag-inheritance --priority=0  $PREFIX_NO_MAIN-empty          dist-$EL
     osg-koji add-tag-inheritance --priority=0  $PREFIX-release        osg-$EL
     osg-koji add-tag-inheritance --priority=9  $PREFIX-release-build  $PREFIX-release
     osg-koji add-tag-inheritance --priority=10 $PREFIX-release-build  dist-$EL-build
