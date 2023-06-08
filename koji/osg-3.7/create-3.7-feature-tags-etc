@@ -22,13 +22,11 @@ ask_yn () {
 
 
 
-while [[ ! ${FEATURE-} ]]; do
-    echo -n 'Enter feature name to use for tag (e.g. "xrootd5")> '
-    read -r FEATURE
-    if ! ask_yn "$FEATURE OK? "; then
-        FEATURE=
-    fi
-done
+FEATURE=${1?"Need feature name (e.g. \"xrootd5\")"}
+if [[ ! $FEATURE =~ ^[a-z][a-z0-9]+$ ]]; then
+    echo "Invalid feature name $FEATURE; must start with a letter and have only lowercase letters and numbers"
+    exit 1
+fi
 
 
 create_bootstrap=false
