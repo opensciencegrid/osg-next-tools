@@ -35,53 +35,63 @@ if ask_yn "Create bootstrap tags? "; then
 fi
 
 
-if ask_yn "Dry run? "; then
-    koji="echo osg-koji"
-else
-    koji="osg-koji"
-    set -x
+do_koji () {
+    local koji
+    local perform_actions="$1"
+    if $perform_actions; then
+        set -x
+        koji="osg-koji"
+    else
+        koji="echo osg-koji"
+    fi
+
+    for EL in el8 el9; do
+        PARENT_PREFIX=osg-$SERIES-main-$EL
+        PREFIX=osg-$SERIES-$FEATURE-$EL
+
+        ### new tags ###
+
+        $koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
+        $koji add-tag --arches=x86_64 $PREFIX-development
+        $koji add-tag --arches=x86_64 $PREFIX-prerelease
+        $koji add-tag --arches=x86_64 $PREFIX-release
+        $koji add-tag --arches=x86_64 $PREFIX-testing
+
+        if $create_bootstrap; then
+            $koji add-tag --arches=x86_64 $PREFIX-bootstrap
+        fi
+
+        ### tag permissions ###
+
+        $koji edit-tag --perm=release-team --lock $PREFIX-release
+
+        ### tag inheritance ###
+
+
+        $koji add-tag-inheritance --priority=0  $PREFIX-build          $PREFIX-development
+        if $create_bootstrap; then
+            $koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
+        fi
+        $koji add-tag-inheritance --priority=8  $PREFIX-build          $PARENT_PREFIX-build
+        $koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
+        $koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
+        $koji add-tag-inheritance --priority=0  $PREFIX-release        osg-$EL
+
+        ### build targets ###
+
+        $koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
+        $koji add-target $PREFIX                           $PREFIX-build         $PREFIX-development
+
+    done
+}
+
+echo "** Doing a dry-run **"
+do_koji false
+echo
+if ask_yn "Do the commands look OK? "; then
+    echo "** Running Koji commands **"
+    do_koji true
 fi
-
-
-
-for EL in el8 el9; do
-    PARENT_PREFIX=osg-$SERIES-main-$EL
-    PREFIX=osg-$SERIES-$FEATURE-$EL
-
-    ### new tags ###
-
-    $koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
-    $koji add-tag --arches=x86_64 $PREFIX-development
-    $koji add-tag --arches=x86_64 $PREFIX-prerelease
-    $koji add-tag --arches=x86_64 $PREFIX-release
-    $koji add-tag --arches=x86_64 $PREFIX-testing
-
-    if $create_bootstrap; then
-        $koji add-tag --arches=x86_64 $PREFIX-bootstrap
-    fi
-
-    ### tag permissions ###
-
-    $koji edit-tag --perm=release-team --lock $PREFIX-release
-
-    ### tag inheritance ###
-
-
-    $koji add-tag-inheritance --priority=0  $PREFIX-build          $PREFIX-development
-    if $create_bootstrap; then
-        $koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
-    fi
-    $koji add-tag-inheritance --priority=8  $PREFIX-build          $PARENT_PREFIX-build
-    $koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
-    $koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
-    $koji add-tag-inheritance --priority=0  $PREFIX-release        osg-$EL
-
-    ### build targets ###
-
-    $koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
-    $koji add-target $PREFIX                           $PREFIX-build         $PREFIX-development
-
-done
 
 echo
 echo "DON'T FORGET TO SET UP PACKAGE SIGNING BEFORE USING THE NEW BUILD TAGS"
