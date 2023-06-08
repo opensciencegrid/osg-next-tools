@@ -29,9 +29,11 @@ fi
 
 
 create_bootstrap=false
-if ask_yn "Create bootstrap tags? "; then
-    create_bootstrap=true
-fi
+## Bootstrap tags usually won't be needed for OSG 3.7 features but they
+## might be useful when going from 3.7 to 3.8.
+# if ask_yn "Create bootstrap tags? "; then
+#     create_bootstrap=true
+# fi
 
 
 do_koji () {
