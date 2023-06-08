@@ -31,6 +31,12 @@ while [[ ! ${FEATURE-} ]]; do
 done
 
 
+create_bootstrap=false
+if ask_yn "Create bootstrap tags? "; then
+    create_bootstrap=true
+fi
+
+
 if ask_yn "Dry run? "; then
     koji="echo osg-koji"
 else
@@ -52,7 +58,9 @@ for EL in el8 el9; do
     $koji add-tag --arches=x86_64 $PREFIX-release
     $koji add-tag --arches=x86_64 $PREFIX-testing
 
-    $koji add-tag --arches=x86_64 $PREFIX-bootstrap
+    if $create_bootstrap; then
+        $koji add-tag --arches=x86_64 $PREFIX-bootstrap
+    fi
 
     ### tag permissions ###
 
@@ -62,7 +70,9 @@ for EL in el8 el9; do
 
 
     $koji add-tag-inheritance --priority=0  $PREFIX-build          $PREFIX-development
-    $koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
+    if $create_bootstrap; then
+        $koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
+    fi
     $koji add-tag-inheritance --priority=8  $PREFIX-build          $PARENT_PREFIX-build
     $koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
     $koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
@@ -75,7 +85,7 @@ for EL in el8 el9; do
 
 done
 
-echo "IF YOU HAVE CREATED NEW BUILD TAGS, BE SURE TO EDIT"
-echo "/etc/koji-hub/plugins/sign.conf AND SET UP PACKAGE SIGNING FOR THE NEW BUILD"
-echo "TAGS."
+echo
+echo "DON'T FORGET TO SET UP PACKAGE SIGNING BEFORE USING THE NEW BUILD TAGS"
+echo
 
