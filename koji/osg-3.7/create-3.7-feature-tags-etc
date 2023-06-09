@@ -4,8 +4,7 @@ set -eu
 # create koji tags/targets/etc for new osg series
 
 SERIES=3.7
-
-build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
+BUILD_TAG_EXTRAS=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
 
 ask_yn () {
@@ -45,42 +44,39 @@ do_koji () {
         koji="echo osg-koji"
     fi
 
-    for EL in el8 el9; do
-        PARENT_PREFIX=osg-$SERIES-main-$EL
-        PREFIX=osg-$SERIES-$FEATURE-$EL
+    local el prefix parent_prefix
+    for el in el8 el9; do
+        parent_prefix="osg-${SERIES}-main-${el}"
+        prefix="osg-${SERIES}-${FEATURE}-${el}"
 
-        ### new tags ###
-
-        $koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
-        $koji add-tag --arches=x86_64 $PREFIX-development
-        $koji add-tag --arches=x86_64 $PREFIX-prerelease
-        $koji add-tag --arches=x86_64 $PREFIX-release
-        $koji add-tag --arches=x86_64 $PREFIX-testing
+        ### NEW TAGS
+        #                 OPTIONS                                   TAG
+        $koji add-tag     --arches=x86_64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
+        $koji add-tag     --arches=x86_64                           ${prefix}-development
+        $koji add-tag     --arches=x86_64                           ${prefix}-prerelease
+        $koji add-tag     --arches=x86_64                           ${prefix}-release
+        $koji edit-tag    --perm=release-team --lock                ${prefix}-release
+        $koji add-tag     --arches=x86_64                           ${prefix}-testing
 
         if $create_bootstrap; then
-            $koji add-tag --arches=x86_64 $PREFIX-bootstrap
+            $koji add-tag --arches=x86_64                           ${prefix}-bootstrap
         fi
 
-        ### tag permissions ###
-
-        $koji edit-tag --perm=release-team --lock $PREFIX-release
-
-        ### tag inheritance ###
-
-
-        $koji add-tag-inheritance --priority=0  $PREFIX-build          $PREFIX-development
+        ### TAG INHERITANCE
+        #                                 PRIORITY  CHILD                    PARENT
+        $koji add-tag-inheritance     --priority=0  ${prefix}-build          ${prefix}-development
+        $koji add-tag-inheritance     --priority=8  ${prefix}-build          ${parent_prefix}-build
+        $koji add-tag-inheritance     --priority=1  ${prefix}-development    ${prefix}-testing
+        $koji add-tag-inheritance     --priority=0  ${prefix}-testing        ${prefix}-release
+        $koji add-tag-inheritance     --priority=0  ${prefix}-release        osg-${el}
         if $create_bootstrap; then
-            $koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
+            $koji add-tag-inheritance --priority=4  ${prefix}-build          ${prefix}-bootstrap
         fi
-        $koji add-tag-inheritance --priority=8  $PREFIX-build          $PARENT_PREFIX-build
-        $koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
-        $koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
-        $koji add-tag-inheritance --priority=0  $PREFIX-release        osg-$EL
 
-        ### build targets ###
-
-        $koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
-        $koji add-target $PREFIX                           $PREFIX-build         $PREFIX-development
+        ### BUILD TARGETS
+        #                NAME                                FROM                    TO
+        $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
+        $koji add-target ${prefix}                           ${prefix}-build         ${prefix}-development
 
     done
 }
