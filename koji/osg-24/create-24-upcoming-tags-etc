@@ -1,0 +1,2 @@
+#!/bin/bash
+exec ./create-24-feature-tags-etc upcoming
