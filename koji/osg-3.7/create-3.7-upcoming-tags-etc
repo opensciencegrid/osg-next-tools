@@ -1,2 +1,0 @@
-#!/bin/bash
-exec ./create-3.7-feature-tags-etc upcoming

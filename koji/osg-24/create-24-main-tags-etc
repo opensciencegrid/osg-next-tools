@@ -3,7 +3,7 @@ set -eu
 
 # create koji tags/targets/etc for new osg series
 
-SERIES=3.7
+SERIES=24
 
 build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
