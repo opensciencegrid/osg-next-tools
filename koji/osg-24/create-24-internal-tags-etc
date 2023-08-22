@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eu
 
-# create koji tags/targets/etc for new osg series
+# create koji tags/targets/etc for internal for the new osg series
 
-SERIES=23
+SERIES=24
 BUILD_TAG_EXTRAS=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
 
