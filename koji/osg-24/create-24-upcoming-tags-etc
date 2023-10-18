@@ -72,11 +72,14 @@ do_koji () {
             $koji add-tag-inheritance --priority=4  ${prefix}-build          ${prefix}-bootstrap
         fi
 
-        ### BUILD TARGETS
+        ### BUILD TARGET
         #                NAME                                FROM                    TO
-        $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
         $koji add-target ${prefix}                           ${prefix}-build         ${prefix}-development
 
+        ### AUTO-GENERATED ("MINEFIELD-STYLE") REPOS
+        #                NAME                                FROM                    TO
+        $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
+        $koji add-target kojira-fake-${prefix}-prerelease    ${prefix}-prerelease    kojira-fake
     done
 }
 

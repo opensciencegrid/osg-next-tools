@@ -67,8 +67,12 @@ for EL in el8 el9; do
 
     ### build targets ###
 
-    $koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
     $koji add-target $PREFIX                           $PREFIX-build         $PREFIX-development
+
+    ### auto-generated ("minefield-style") repos
+
+    $koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
+    $koji add-target kojira-fake-$PREFIX-prerelease    $PREFIX-prerelease    kojira-fake
 
 done
 
