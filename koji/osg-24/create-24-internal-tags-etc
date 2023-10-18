@@ -55,11 +55,15 @@ do_koji () {
         $koji add-tag-inheritance     --priority=1  ${prefix}-development    ${prefix}-release
         $koji add-tag-inheritance     --priority=0  ${prefix}-release        osg-${el}
 
-        ### BUILD TARGETS
+        ### BUILD TARGET
         #                NAME                                FROM                    TO
-        $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
         $koji add-target ${prefix}                           ${prefix}-build         ${prefix}-development
 
+        ### AUTO-GENERATED ("MINEFIELD-STYLE") REPOS
+        #                NAME                                FROM                    TO
+        $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
+        $koji add-target kojira-fake-${prefix}-release       ${prefix}-release       kojira-fake
+        # ^^ internal repos do not have a prerelease and the release repo is minefield-style instead of built by mash
     done
 }
 
