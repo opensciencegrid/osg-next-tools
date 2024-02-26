@@ -35,42 +35,60 @@ do_koji () {
         koji="echo osg-koji"
     fi
 
-    local el top_tag top_build_tag prefix package_tag
+    # Terminology:
+    #
+    # A "package" is a piece of software that can be built in Koji e.g., "condor".
+    # It doesn't include a version or a specific set of RPMs; it's just the name.
+    #
+    # A "package tag" is a tag that only contains packages.
+    # They usually don't have suffixes after the distro version.
+    #
+    # A "build" is an SRPM and all the RPMs that result from buildings its contents.
+    #
+    # A "build tag" is a tag that build environments are created from.
+    # They usually have the suffix "-build".
+    #
+    # A "repo tag" (my term) is a tag that builds can be put into (and repos can be created from).
+    # They have suffixes like "-development", "-testing", "-release".
+
+    local top_package_tag top_build_tag prefix new_package_tag new_build_tag
+
     for el in el8 el9; do
-        # dist-${el} is the top-level tag for builds of that el version;
-        # all tags inherit from it (often indirectly, e.g., via osg-${el}).
-        # dist-${el}-build is the top-level build tag; same thing, all tags inherit from it (usually indirectly)
-        top_tag="dist-${el}"
+        # dist-${el} is the top-level package tag.
+        # All tags inherit from it (often indirectly, e.g., via osg-${el}).
+        #
+        # dist-${el}-build is the top-level build tag;
+        # same thing, all tags inherit from it (usually indirectly).
+        top_package_tag="dist-${el}"
         top_build_tag="dist-${el}-build"
         prefix="chtc-${el}"
+        new_package_tag="chtc-${el}"
+        new_build_tag="chtc-${el}-build"
 
-        # The "package" tag contains all the software names that are allowed to be built
-        # into the CHTC tags.  Does not contain any architectures.
-        package_tag="chtc-${el}"
 
         ### PACKAGE TAG
         #                 OPTIONS                                   TAG
-        $koji add-tag                                               ${package_tag}
+        $koji add-tag                                               ${new_package_tag}
 
         ### NEW TAGS
         #                 OPTIONS                                   TAG
-        $koji add-tag     --arches=x86_64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
+        $koji add-tag     --arches=x86_64 "${BUILD_TAG_EXTRAS[@]}"  ${new_build_tag}
         $koji add-tag     --arches=x86_64                           ${prefix}-development
         $koji add-tag     --arches=x86_64                           ${prefix}-testing
         $koji add-tag     --arches=x86_64                           ${prefix}-release
 
         ### TAG INHERITANCE (LOWER NUMBER WINS)
         #                                 PRIORITY  CHILD                    PARENT
-        $koji add-tag-inheritance     --priority=0  ${prefix}                ${top_tag}
-        $koji add-tag-inheritance     --priority=1  ${prefix}-build          ${top_build_tag}
-        $koji add-tag-inheritance     --priority=0  ${prefix}-build          ${prefix}-development
+        $koji add-tag-inheritance     --priority=0  ${new_package_tag}       ${top_package_tag}
+        $koji add-tag-inheritance     --priority=1  ${new_build_tag}         ${top_build_tag}
+        $koji add-tag-inheritance     --priority=0  ${new_build_tag}         ${prefix}-development
         $koji add-tag-inheritance     --priority=0  ${prefix}-development    ${prefix}-testing
         $koji add-tag-inheritance     --priority=0  ${prefix}-testing        ${prefix}-release
-        $koji add-tag-inheritance     --priority=0  ${prefix}-release        ${package_tag}
+        $koji add-tag-inheritance     --priority=0  ${prefix}-release        ${new_package_tag}
 
         ### BUILD TARGET
         #                NAME                                FROM                    TO
-        $koji add-target ${prefix}                           ${prefix}-build         ${prefix}-development
+        $koji add-target ${prefix}                           ${new_build_tag}        ${prefix}-development
 
         ### AUTO-GENERATED ("MINEFIELD-STYLE") REPOS
         #                NAME                                FROM                    TO
