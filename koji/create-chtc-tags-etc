@@ -1,9 +1,14 @@
 #!/bin/bash
 set -eu
 
-# create koji tags/targets/etc for internal for the new osg series
+# create koji tags/targets/etc for chtc
+#
+# The chtc tags/targets look more like the hcc tags/targets than the osg
+# tags/targets, because they aren't per-series so they don't have a layer of indirection
+# (so instead of "dist -> osg -> osg-23 -> osg-23-main",
+#  it's just "dist -> chtc")
 
-SERIES=24
+
 BUILD_TAG_EXTRAS=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
 
@@ -20,13 +25,6 @@ ask_yn () {
 }
 
 
-FEATURE=internal
-# if [[ ! $FEATURE =~ ^[a-z][a-z0-9]+$ ]]; then
-#     echo "Invalid feature name $FEATURE; must start with a letter and have only lowercase letters and numbers"
-#     exit 1
-# fi
-
-
 do_koji () {
     local koji
     local perform_actions="$1"
@@ -37,23 +35,38 @@ do_koji () {
         koji="echo osg-koji"
     fi
 
-    local el prefix parent_prefix
+    local el top_tag top_build_tag prefix package_tag
     for el in el8 el9; do
-        parent_prefix="osg-${SERIES}-main-${el}"
-        prefix="osg-${SERIES}-${FEATURE}-${el}"
+        # dist-${el} is the top-level tag for builds of that el version;
+        # all tags inherit from it (often indirectly, e.g., via osg-${el}).
+        # dist-${el}-build is the top-level build tag; same thing, all tags inherit from it (usually indirectly)
+        top_tag="dist-${el}"
+        top_build_tag="dist-${el}-build"
+        prefix="chtc-${el}"
+
+        # The "package" tag contains all the software names that are allowed to be built
+        # into the CHTC tags.  Does not contain any architectures.
+        package_tag="chtc-${el}"
+
+        ### PACKAGE TAG
+        #                 OPTIONS                                   TAG
+        $koji add-tag                                               ${package_tag}
 
         ### NEW TAGS
         #                 OPTIONS                                   TAG
         $koji add-tag     --arches=x86_64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
         $koji add-tag     --arches=x86_64                           ${prefix}-development
+        $koji add-tag     --arches=x86_64                           ${prefix}-testing
         $koji add-tag     --arches=x86_64                           ${prefix}-release
 
-        ### TAG INHERITANCE
+        ### TAG INHERITANCE (LOWER NUMBER WINS)
         #                                 PRIORITY  CHILD                    PARENT
+        $koji add-tag-inheritance     --priority=0  ${prefix}                ${top_tag}
+        $koji add-tag-inheritance     --priority=1  ${prefix}-build          ${top_build_tag}
         $koji add-tag-inheritance     --priority=0  ${prefix}-build          ${prefix}-development
-        $koji add-tag-inheritance     --priority=8  ${prefix}-build          ${parent_prefix}-build
-        $koji add-tag-inheritance     --priority=1  ${prefix}-development    ${prefix}-release
-        $koji add-tag-inheritance     --priority=0  ${prefix}-release        osg-${el}
+        $koji add-tag-inheritance     --priority=0  ${prefix}-development    ${prefix}-testing
+        $koji add-tag-inheritance     --priority=0  ${prefix}-testing        ${prefix}-release
+        $koji add-tag-inheritance     --priority=0  ${prefix}-release        ${package_tag}
 
         ### BUILD TARGET
         #                NAME                                FROM                    TO
@@ -62,8 +75,8 @@ do_koji () {
         ### AUTO-GENERATED ("MINEFIELD-STYLE") REPOS
         #                NAME                                FROM                    TO
         $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
+        $koji add-target kojira-fake-${prefix}-testing       ${prefix}-testing       kojira-fake
         $koji add-target kojira-fake-${prefix}-release       ${prefix}-release       kojira-fake
-        # ^^ internal repos do not have a prerelease and the release repo is minefield-style instead of built by mash
     done
 }
 
