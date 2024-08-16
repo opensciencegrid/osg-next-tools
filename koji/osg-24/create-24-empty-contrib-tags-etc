@@ -1,0 +1,60 @@
+#!/bin/bash
+set -eu
+
+# create koji tags/targets/etc for empty and contrib in the new osg series
+
+SERIES=24
+
+build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
+
+
+ask_yn () {
+    echo -n "$@"
+    while read -r; do
+        case $REPLY in
+            [Yy]*) return 0 ;;
+            [Nn]*) return 1 ;;
+            *) echo "Enter yes or no" ;;
+        esac
+    done
+    return 2
+}
+
+
+if ask_yn "Dry run? "; then
+    koji="echo osg-koji"
+else
+    koji="osg-koji"
+    set -x
+fi
+
+
+for REPO in empty contrib; do
+  for EL in el8 el9; do
+    PREFIX=osg-$SERIES-$EL-$REPO
+
+    ### new tags ###
+
+    $koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
+    $koji add-tag --arches=x86_64 $PREFIX
+
+    ### tag inheritance ###
+
+    $koji add-tag-inheritance --priority=2 --noconfig $PREFIX      osg-$EL
+    $koji add-tag-inheritance --priority=1  $PREFIX        dist-$EL
+
+    $koji add-tag-inheritance --priority=1 $PREFIX-build $PREFIX 
+    $koji add-tag-inheritance --priority=2 $PREFIX-build dist-$EL-build
+
+    ### build targets ###
+
+    $koji add-target $PREFIX $PREFIX-build $PREFIX
+
+    ### auto-generated ("minefield-style") repos
+  done
+done
+
+echo "IF YOU HAVE CREATED NEW BUILD TAGS, BE SURE TO EDIT"
+echo "/etc/koji-hub/plugins/sign.conf AND SET UP PACKAGE SIGNING FOR THE NEW BUILD"
+echo "TAGS."
+

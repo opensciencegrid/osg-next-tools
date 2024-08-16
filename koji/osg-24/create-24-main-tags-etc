@@ -36,9 +36,7 @@ for EL in el8 el9; do
     ### new tags ###
 
     $koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
-    $koji add-tag --arches=x86_64 $PREFIX_NO_MAIN-contrib
     $koji add-tag --arches=x86_64 $PREFIX-development
-    $koji add-tag --arches=x86_64 $PREFIX_NO_MAIN-empty
     $koji add-tag --arches=x86_64 $PREFIX-prerelease
     $koji add-tag --arches=x86_64 $PREFIX-release
     $koji add-tag --arches=x86_64 $PREFIX-testing
@@ -51,17 +49,13 @@ for EL in el8 el9; do
 
     ### tag inheritance ###
 
-    $koji add-tag-inheritance --priority=2 --noconfig $PREFIX_NO_MAIN-contrib      osg-$EL
-    $koji add-tag-inheritance --priority=2 --noconfig $PREFIX_NO_MAIN-empty        osg-$EL
     $koji add-tag-inheritance --priority=1 --noconfig $PREFIX-prerelease   osg-$EL
 
     $koji add-tag-inheritance --priority=0  $PREFIX-build          $PREFIX-development
     $koji add-tag-inheritance --priority=2  $PREFIX-build          osg-$EL-internal
     $koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
     $koji add-tag-inheritance --priority=10 $PREFIX-build          dist-$EL-build
-    $koji add-tag-inheritance --priority=1  $PREFIX_NO_MAIN-contrib        dist-$EL
     $koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
-    $koji add-tag-inheritance --priority=0  $PREFIX_NO_MAIN-empty          dist-$EL
     $koji add-tag-inheritance --priority=0  $PREFIX-release        osg-$EL
     $koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
 
