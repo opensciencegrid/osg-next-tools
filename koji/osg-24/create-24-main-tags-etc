@@ -35,13 +35,13 @@ for EL in el8 el9; do
 
     ### new tags ###
 
-    $koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
-    $koji add-tag --arches=x86_64 $PREFIX-development
-    $koji add-tag --arches=x86_64 $PREFIX-prerelease
-    $koji add-tag --arches=x86_64 $PREFIX-release
-    $koji add-tag --arches=x86_64 $PREFIX-testing
+    $koji add-tag --arches=x86_64,aarch64 "${build_tag_extras[@]}" $PREFIX-build
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-development
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-prerelease
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-release
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-testing
 
-    $koji add-tag --arches=x86_64 $PREFIX-bootstrap
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-bootstrap
 
     ### tag permissions ###
 

@@ -44,9 +44,9 @@ do_koji () {
 
         ### NEW TAGS
         #                 OPTIONS                                   TAG
-        $koji add-tag     --arches=x86_64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
-        $koji add-tag     --arches=x86_64                           ${prefix}-development
-        $koji add-tag     --arches=x86_64                           ${prefix}-release
+        $koji add-tag     --arches=x86_64,aarch64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-development
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-release
 
         ### TAG INHERITANCE
         #                                 PRIORITY  CHILD                    PARENT

@@ -35,8 +35,8 @@ for REPO in empty contrib; do
 
     ### new tags ###
 
-    $koji add-tag --arches=x86_64 "${build_tag_extras[@]}" $PREFIX-build
-    $koji add-tag --arches=x86_64 $PREFIX
+    $koji add-tag --arches=x86_64,aarch64 "${build_tag_extras[@]}" $PREFIX-build
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX
 
     ### tag inheritance ###
 
