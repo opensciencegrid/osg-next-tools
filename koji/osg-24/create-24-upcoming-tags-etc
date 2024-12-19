@@ -6,6 +6,8 @@ set -eu
 SERIES=24
 BUILD_TAG_EXTRAS=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
+AUTO_KEY=34e958b3
+DEV_KEY=effc3be6
 
 ask_yn () {
     echo -n "$@"
@@ -50,15 +52,15 @@ do_koji () {
 
         ### NEW TAGS
         #                 OPTIONS                                   TAG
-        $koji add-tag     --arches=x86_64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
-        $koji add-tag     --arches=x86_64                           ${prefix}-development
-        $koji add-tag     --arches=x86_64                           ${prefix}-prerelease
-        $koji add-tag     --arches=x86_64                           ${prefix}-release
+        $koji add-tag     --arches=x86_64,aarch64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-development
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-prerelease
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-release
         $koji edit-tag    --perm=release-team --lock                ${prefix}-release
-        $koji add-tag     --arches=x86_64                           ${prefix}-testing
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-testing
 
         if $create_bootstrap; then
-            $koji add-tag --arches=x86_64                           ${prefix}-bootstrap
+            $koji add-tag --arches=x86_64,aarch64                           ${prefix}-bootstrap
         fi
 
         ### TAG INHERITANCE
@@ -80,6 +82,14 @@ do_koji () {
         #                NAME                                FROM                    TO
         $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
         $koji add-target kojira-fake-${prefix}-prerelease    ${prefix}-prerelease    kojira-fake
+
+        ### Tag2distrepo Config
+        $koji edit-tag -x tag2distrepo.keys=${AUTO_KEY} -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=False ${prefix}-development
+        $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=False ${prefix}-testing
+        $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=True ${prefix}-release
     done
 }
 
