@@ -7,6 +7,7 @@ SERIES=24
 
 build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
+AUTO_KEY=34e958b3
 
 ask_yn () {
     echo -n "$@"
@@ -51,6 +52,10 @@ for REPO in empty contrib; do
     $koji add-target $PREFIX $PREFIX-build $PREFIX
 
     ### auto-generated ("minefield-style") repos
+
+    ### Tag2distrepo Config
+    $koji edit-tag -x tag2distrepo.keys=${AUTO_KEY} -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=False ${PREFIX}
   done
 done
 

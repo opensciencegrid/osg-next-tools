@@ -7,6 +7,8 @@ SERIES=24
 
 build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
+AUTO_KEY=34e958b3
+DEV_KEY=effc3be6
 
 ask_yn () {
     echo -n "$@"
@@ -67,6 +69,14 @@ for EL in el8 el9; do
 
     $koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
     $koji add-target kojira-fake-$PREFIX-prerelease    $PREFIX-prerelease    kojira-fake
+
+    ### Tag2distrepo Config
+    $koji edit-tag -x tag2distrepo.keys=${AUTO_KEY} -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=False ${prefix}-development
+    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=False ${prefix}-testing
+    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=True ${prefix}-release
 
 done
 
