@@ -75,7 +75,10 @@ for EL in el8 el9; do
             -x tag2distrepo.include-outdated=False ${prefix}-development
     $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
             -x tag2distrepo.include-outdated=False ${prefix}-testing
-    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
+    # Still need key configuration for release repos. However, moving a large number of 
+    # packages from prerelease to release at once can cause performance issues, so it's
+    # better to run dist-repo manually via releaes scripts
+    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=False \
             -x tag2distrepo.include-outdated=True ${prefix}-release
 
 done
