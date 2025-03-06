@@ -84,12 +84,21 @@ do_koji () {
         $koji add-target kojira-fake-${prefix}-prerelease    ${prefix}-prerelease    kojira-fake
 
         ### Tag2distrepo Config
-        $koji edit-tag -x tag2distrepo.keys=${AUTO_KEY} -x tag2distrepo.enabled=True \
-                -x tag2distrepo.include-outdated=False ${prefix}-development
-        $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
-                -x tag2distrepo.include-outdated=False ${prefix}-testing
-        $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
-                -x tag2distrepo.include-outdated=True ${prefix}-release
+        $koji edit-tag -x tag2distrepo.keys=${AUTO_KEY} \
+                -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=False \
+                -x distrepo.cancel_others=True \
+                ${prefix}-development
+        $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} \
+                -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=False \
+                -x distrepo.cancel_others=True \
+                ${prefix}-testing
+        $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} \
+                -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=True \
+                -x distrepo.cancel_others=True \
+                ${prefix}-release
     done
 }
 
