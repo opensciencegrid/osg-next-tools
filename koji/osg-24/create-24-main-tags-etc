@@ -75,8 +75,11 @@ for EL in el8 el9; do
             -x tag2distrepo.include-outdated=False ${prefix}-development
     $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
             -x tag2distrepo.include-outdated=False ${prefix}-testing
-    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
-            -x tag2distrepo.include-outdated=True ${prefix}-release
+    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} \
+            -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=True \
+            -x distrepo.cancel_others=True \
+            ${prefix}-release
 
 done
 
