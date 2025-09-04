@@ -54,8 +54,8 @@ do_el ()
     ### NEW TAGS
     #             OPTIONS                                      TAG
     $KOJI add-tag --arches=${arches} "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
-    $KOJI add-tag --arches=${arches}                           ${prefix}-development
-    $KOJI add-tag --arches=${arches}                           ${prefix}-prerelease
+    $KOJI add-tag --arches=${arches} -x repo.auto=True         ${prefix}-development
+    $KOJI add-tag --arches=${arches} -x repo.auto=True         ${prefix}-prerelease
     $KOJI add-tag --arches=${arches}                           ${prefix}-release
     $KOJI add-tag --arches=${arches}                           ${prefix}-testing
     $KOJI add-tag --arches=${arches}                           ${prefix}-bootstrap
