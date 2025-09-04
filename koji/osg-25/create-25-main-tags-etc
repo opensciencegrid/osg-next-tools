@@ -1,0 +1,95 @@
+#!/bin/bash
+set -eu
+
+# create koji tags/targets/etc for new osg series
+
+SERIES=24
+
+build_tag_extras=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
+
+AUTO_KEY=34e958b3
+DEV_KEY=effc3be6
+
+ask_yn () {
+    echo -n "$@"
+    while read -r; do
+        case $REPLY in
+            [Yy]*) return 0 ;;
+            [Nn]*) return 1 ;;
+            *) echo "Enter yes or no" ;;
+        esac
+    done
+    return 2
+}
+
+
+if ask_yn "Dry run? "; then
+    koji="echo osg-koji"
+else
+    koji="osg-koji"
+    set -x
+fi
+
+
+for EL in el8 el9; do
+    PREFIX=osg-$SERIES-main-$EL
+    PREFIX_NO_MAIN=osg-$SERIES-$EL
+
+    ### new tags ###
+
+    $koji add-tag --arches=x86_64,aarch64 "${build_tag_extras[@]}" $PREFIX-build
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-development
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-prerelease
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-release
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-testing
+
+    $koji add-tag --arches=x86_64,aarch64 $PREFIX-bootstrap
+
+    ### tag permissions ###
+
+    $koji edit-tag --perm=release-team --lock $PREFIX-release
+
+    ### tag inheritance ###
+
+    $koji add-tag-inheritance --priority=1 --noconfig $PREFIX-prerelease   osg-$EL
+
+    $koji add-tag-inheritance --priority=0  $PREFIX-build          $PREFIX-development
+    $koji add-tag-inheritance --priority=2  $PREFIX-build          osg-$EL-internal
+    $koji add-tag-inheritance --priority=4  $PREFIX-build          $PREFIX-bootstrap
+    $koji add-tag-inheritance --priority=10 $PREFIX-build          dist-$EL-build
+    $koji add-tag-inheritance --priority=1  $PREFIX-development    $PREFIX-testing
+    $koji add-tag-inheritance --priority=0  $PREFIX-release        osg-$EL
+    $koji add-tag-inheritance --priority=0  $PREFIX-testing        $PREFIX-release
+
+    ### build targets ###
+
+    $koji add-target $PREFIX                           $PREFIX-build         $PREFIX-development
+
+    ### auto-generated ("minefield-style") repos
+
+    $koji add-target kojira-fake-$PREFIX-development   $PREFIX-development   kojira-fake
+    $koji add-target kojira-fake-$PREFIX-prerelease    $PREFIX-prerelease    kojira-fake
+
+    ### Tag2distrepo Config
+    $koji edit-tag -x tag2distrepo.keys=${AUTO_KEY} \
+            -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=False \
+            -x distrepo.cancel_others=True \
+            ${prefix}-development
+    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} \
+            -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=False \
+            -x distrepo.cancel_others=True \
+            ${prefix}-testing
+    $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} \
+            -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=True \
+            -x distrepo.cancel_others=True \
+            ${prefix}-release
+
+done
+
+echo "IF YOU HAVE CREATED NEW BUILD TAGS, BE SURE TO EDIT"
+echo "/etc/koji-hub/plugins/sign.conf AND SET UP PACKAGE SIGNING FOR THE NEW BUILD"
+echo "TAGS."
+

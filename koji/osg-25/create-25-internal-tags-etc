@@ -1,0 +1,89 @@
+#!/bin/bash
+set -eu
+
+# create koji tags/targets/etc for internal for the new osg series
+
+SERIES=24
+BUILD_TAG_EXTRAS=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
+
+AUTO_KEY=34e958b3
+DEV_KEY=effc3be6
+
+ask_yn () {
+    echo -n "$@"
+    while read -r; do
+        case $REPLY in
+            [Yy]*) return 0 ;;
+            [Nn]*) return 1 ;;
+            *) echo "Enter yes or no" ;;
+        esac
+    done
+    return 2
+}
+
+
+FEATURE=internal
+# if [[ ! $FEATURE =~ ^[a-z][a-z0-9]+$ ]]; then
+#     echo "Invalid feature name $FEATURE; must start with a letter and have only lowercase letters and numbers"
+#     exit 1
+# fi
+
+
+do_koji () {
+    local koji
+    local perform_actions="$1"
+    if $perform_actions; then
+        set -x
+        koji="osg-koji"
+    else
+        koji="echo osg-koji"
+    fi
+
+    local el prefix parent_prefix
+    for el in el8 el9; do
+        parent_prefix="osg-${SERIES}-main-${el}"
+        prefix="osg-${SERIES}-${FEATURE}-${el}"
+
+        ### NEW TAGS
+        #                 OPTIONS                                   TAG
+        $koji add-tag     --arches=x86_64,aarch64 "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-development
+        $koji add-tag     --arches=x86_64,aarch64                           ${prefix}-release
+
+        ### TAG INHERITANCE
+        #                                 PRIORITY  CHILD                    PARENT
+        $koji add-tag-inheritance     --priority=0  ${prefix}-build          ${prefix}-development
+        $koji add-tag-inheritance     --priority=8  ${prefix}-build          ${parent_prefix}-build
+        $koji add-tag-inheritance     --priority=1  ${prefix}-development    ${prefix}-release
+        $koji add-tag-inheritance     --priority=0  ${prefix}-release        osg-${el}
+
+        ### BUILD TARGET
+        #                NAME                                FROM                    TO
+        $koji add-target ${prefix}                           ${prefix}-build         ${prefix}-development
+
+        ### AUTO-GENERATED ("MINEFIELD-STYLE") REPOS
+        #                NAME                                FROM                    TO
+        $koji add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
+        $koji add-target kojira-fake-${prefix}-release       ${prefix}-release       kojira-fake
+        # ^^ internal repos do not have a prerelease and the release repo is minefield-style instead of built by mash
+
+        ### Tag2distrepo Config
+        $koji edit-tag -x tag2distrepo.keys=${AUTO_KEY} -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=False ${prefix}-development
+        $koji edit-tag -x tag2distrepo.keys=${DEV_KEY} -x tag2distrepo.enabled=True \
+                -x tag2distrepo.include-outdated=True ${prefix}-release
+    done
+}
+
+echo "** Doing a dry-run **"
+do_koji false
+echo
+if ask_yn "Do the commands look OK? "; then
+    echo "** Running Koji commands **"
+    do_koji true
+fi
+
+echo
+echo "DON'T FORGET TO SET UP PACKAGE SIGNING BEFORE USING THE NEW BUILD TAGS"
+echo
+
