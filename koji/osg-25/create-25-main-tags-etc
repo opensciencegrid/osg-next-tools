@@ -58,7 +58,6 @@ do_el ()
     $KOJI add-tag --arches=${arches} -x repo.auto=True         ${prefix}-prerelease
     $KOJI add-tag --arches=${arches}                           ${prefix}-release
     $KOJI add-tag --arches=${arches}                           ${prefix}-testing
-    $KOJI add-tag --arches=${arches}                           ${prefix}-bootstrap
 
     ### TAG PERMISSIONS ###
 
@@ -72,7 +71,6 @@ do_el ()
     [[ -n ${parent_prefix} ]] && \
         $KOJI add-tag-inheritance --priority=8          ${prefix}-build          ${parent_prefix}-build
     $KOJI add-tag-inheritance --priority=2              ${prefix}-build          osg-${el}-internal
-    $KOJI add-tag-inheritance --priority=4              ${prefix}-build          ${prefix}-bootstrap
     $KOJI add-tag-inheritance --priority=10             ${prefix}-build          dist-${el}-build
     $KOJI add-tag-inheritance --priority=1              ${prefix}-development    ${prefix}-testing
     $KOJI add-tag-inheritance --priority=0              ${prefix}-testing        ${prefix}-release
