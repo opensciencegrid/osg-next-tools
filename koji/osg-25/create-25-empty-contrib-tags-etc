@@ -41,7 +41,7 @@ do_el ()
 
     local prefix parent_prefix
     prefix=osg-${SERIES}-${section}-${el}
-    parent_prefix=dist-${el}
+    parent_prefix=osg-${SERIES}-main-${el}
 
     local arches
     if [[ ${el} == el10 ]]
