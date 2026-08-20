@@ -4,12 +4,12 @@ set -eu
 
 # create koji tags/targets/etc for upcoming for the new osg series
 
-SERIES=25
+SERIES=26
 SECTIONS="upcoming"
 BUILD_TAG_EXTRAS=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
 
-AUTO_KEY=222c5d49
-DEV_KEY=d4e9b1fc
+AUTO_KEY=e9014f81
+DEV_KEY=4c458860
 
 
 ask_yn () {
