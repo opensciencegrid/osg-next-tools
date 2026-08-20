@@ -1,0 +1,120 @@
+#!/bin/bash
+# shellcheck disable=SC2086
+set -eu
+
+# create koji tags/targets/etc for main for the new osg series
+
+SERIES=25
+SECTIONS="main"
+BUILD_TAG_EXTRAS=(-x rebuild_srpm=False -x mock.yum.module_hotfixes=1)
+
+AUTO_KEY=222c5d49
+DEV_KEY=d4e9b1fc
+
+
+ask_yn () {
+    echo -n "$@"
+    while read -r; do
+        case $REPLY in
+            [Yy]*) return 0 ;;
+            [Nn]*) return 1 ;;
+            *) echo "Enter yes or no" ;;
+        esac
+    done
+    return 2
+}
+
+
+if ask_yn "Dry run? "
+then
+    KOJI="echo osg-koji"
+else
+    KOJI="osg-koji"
+    set -x
+fi
+
+
+do_el ()
+{
+    local el="${1?Need el}"
+    local section="${2?Need section}"
+
+    local prefix parent_prefix
+    prefix=osg-${SERIES}-${section}-${el}
+    parent_prefix=
+
+    local arches
+    if [[ ${el} == el10 ]]
+    then
+        arches=x86_64_v2,aarch64
+    else
+        arches=x86_64,aarch64
+    fi
+
+    ### NEW TAGS
+    #             OPTIONS                                      TAG
+    $KOJI add-tag --arches=${arches} "${BUILD_TAG_EXTRAS[@]}"  ${prefix}-build
+    $KOJI add-tag --arches=${arches} -x repo.auto=True         ${prefix}-development
+    $KOJI add-tag --arches=${arches} -x repo.auto=True         ${prefix}-prerelease
+    $KOJI add-tag --arches=${arches}                           ${prefix}-release
+    $KOJI add-tag --arches=${arches}                           ${prefix}-testing
+
+    ### TAG PERMISSIONS ###
+
+    $KOJI edit-tag --perm=release-team --lock ${prefix}-release
+
+    ### TAG INHERITANCE
+    #                             PRIORITY              CHILD                    PARENT
+    $KOJI add-tag-inheritance --priority=0  --noconfig  ${prefix}-release        osg-${el}
+    $KOJI add-tag-inheritance --priority=1  --noconfig  ${prefix}-prerelease     osg-${el}
+    $KOJI add-tag-inheritance --priority=0              ${prefix}-build          ${prefix}-development
+    [[ -n ${parent_prefix} ]] && \
+        $KOJI add-tag-inheritance --priority=8          ${prefix}-build          ${parent_prefix}-build
+    $KOJI add-tag-inheritance --priority=2              ${prefix}-build          osg-${el}-internal
+    $KOJI add-tag-inheritance --priority=10             ${prefix}-build          dist-${el}-build
+    $KOJI add-tag-inheritance --priority=1              ${prefix}-development    ${prefix}-testing
+    $KOJI add-tag-inheritance --priority=0              ${prefix}-testing        ${prefix}-release
+
+    ### BUILD TARGET
+    #                NAME                                FROM                    TO
+    $KOJI add-target ${prefix}                           ${prefix}-build         ${prefix}-development
+
+    ### AUTO-GENERATED ("MINEFIELD-STYLE") REPOS
+    #                NAME                                FROM                    TO
+    $KOJI add-target kojira-fake-${prefix}-development   ${prefix}-development   kojira-fake
+    $KOJI add-target kojira-fake-${prefix}-prerelease    ${prefix}-prerelease    kojira-fake
+
+    ### Tag2distrepo Config
+    $KOJI edit-tag \
+            -x tag2distrepo.keys=${AUTO_KEY} \
+            -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=False \
+            -x distrepo.cancel_others=True \
+            ${prefix}-development
+    $KOJI edit-tag \
+            -x tag2distrepo.keys=${DEV_KEY} \
+            -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=True \
+            -x distrepo.cancel_others=True \
+            ${prefix}-testing
+    $KOJI edit-tag \
+            -x tag2distrepo.keys=${DEV_KEY} \
+            -x tag2distrepo.enabled=True \
+            -x tag2distrepo.include-outdated=True \
+            -x distrepo.cancel_others=True \
+            ${prefix}-release
+}
+
+
+for el in el8 el9 el10
+do
+    for section in ${SECTIONS}
+    do
+        do_el ${el} ${section}
+    done
+done
+
+echo "IF YOU HAVE CREATED NEW BUILD TAGS, BE SURE TO EDIT"
+echo "/etc/koji-hub/plugins/sign.conf AND SET UP PACKAGE SIGNING FOR THE NEW BUILD"
+echo "TAGS."
+
